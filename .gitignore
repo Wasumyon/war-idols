@@ -1,0 +1,9 @@
+# OS / shell cruft
+Thumbs.db
+desktop.ini
+.DS_Store
+*.tmp
+
+# Microsoft Word lock/owner files
+~$*.docx
+~$*.doc
