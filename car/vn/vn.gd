@@ -3,7 +3,10 @@ extends Control
 ##
 ## FORMAT
 ##   == label          start a labelled beat (a jump target)
-##   Name: line        a dialogue or narration line (BBCode allowed)
+##   Name: line        a dialogue line (BBCode allowed)
+##   (no colon) line   NARRATION - unattributed, full screen. Consecutive
+##                     narration lines merge into one block.
+##   Narrator: line    same as above (kept for readability); never shows a name.
 ##   ? choice text     a branch under the line above
 ##   + stat n          effect for the branch above (or the beat, if no branch yet)
 ##   -> label          jump to a label; leave blank to end the scene
@@ -31,10 +34,14 @@ var _node_id := ""
 var _revealing := false
 var _char_timer := 0.0
 var _char_count := 0
+var _narr_lines := PackedStringArray()
+var _narr_shown := 0
 
+@onready var box: ColorRect = $Box
 @onready var portrait: TextureRect = $Portrait
 @onready var name_label: Label = $Box/Name
 @onready var text_label: RichTextLabel = $Box/Text
+@onready var narration_label: RichTextLabel = $Narration
 @onready var choices: VBoxContainer = $Choices
 @onready var hint: Label = $Hint
 @onready var name_panel: PanelContainer = $NamePanel
@@ -108,13 +115,32 @@ func _parse(text: String) -> void:
 				cur["next_label"] = lbl
 				cur["force_end"] = (lbl == "")
 		else:
+			var spk := ""
+			var body := ""
 			var i := line.find(":")
-			if i < 0:
-				continue
+			if i >= 0:
+				spk = line.substr(0, i).strip_edges()
+				body = line.substr(i + 1).strip_edges()
+			else:
+				body = line   # a bare line is narration
+			var is_narr: bool = spk == "" or spk == "Narrator" or spk == "~"
+
+			# Merge consecutive narration into one full-screen block.
+			if is_narr and not blocks.is_empty():
+				var prev: Dictionary = blocks[blocks.size() - 1]
+				if prev["narration"] and prev["choices"].is_empty() and prev["next_label"] == "" and not prev["force_end"]:
+					prev["text"] = str(prev["text"]) + "\n" + body
+					prev["staging"] = Array(prev["staging"]) + Array(pending_staging)
+					pending_staging.clear()
+					cur = prev
+					last_choice = null
+					continue
+
 			cur = {
 				"label": pending_label,
-				"speaker": line.substr(0, i).strip_edges(),
-				"text": line.substr(i + 1).strip_edges(),
+				"speaker": spk,
+				"text": body,
+				"narration": is_narr,
 				"effects": {},
 				"choices": [],
 				"next_label": "",
@@ -142,6 +168,7 @@ func _parse(text: String) -> void:
 		var node := {
 			"speaker": b["speaker"],
 			"text": b["text"],
+			"narration": b["narration"],
 			"effects": b["effects"],
 			"staging": b["staging"],
 			"next": _resolve(str(b["next_label"]), bool(b["force_end"]), i, blocks, labels),
@@ -182,17 +209,40 @@ func _goto(id: String) -> void:
 	var node: Dictionary = _nodes["nodes"][id]
 	_apply_effects(node.get("effects", {}))
 
-	name_label.text = _speaker_name(node)
-	text_label.text = _compose_text(node)
-	text_label.visible_characters = 0
-	_char_count = text_label.get_total_character_count()
-	_char_timer = 0.0
-	_revealing = true
-
 	_clear_choices()
 	hint.text = ""
+
+	var body := _compose_text(node)
+	if bool(node.get("narration", false)):
+		# Unattributed, full screen. Lines accumulate one click at a time.
+		box.visible = false
+		portrait.visible = false
+		narration_label.visible = true
+		_narr_lines = body.split("\n")
+		_narr_shown = 1 if _narr_lines.size() > 0 else 0
+		_render_narration()
+		_revealing = false
+		_present_choices()
+	else:
+		narration_label.visible = false
+		box.visible = true
+		portrait.visible = true
+		name_label.text = _speaker_name(node)
+		text_label.text = body
+		text_label.visible_characters = 0
+		_char_count = text_label.get_total_character_count()
+		_char_timer = 0.0
+		_revealing = true
+
 	if _has_staging(node, "input_name"):
 		_show_name_input()
+
+
+func _render_narration() -> void:
+	var out := PackedStringArray()
+	for i in _narr_shown:
+		out.append(_narr_lines[i])
+	narration_label.text = "\n".join(out)
 
 
 func _speaker_name(node: Dictionary) -> String:
@@ -237,7 +287,6 @@ func _on_name_submitted(_text: String) -> void:
 func _confirm_name() -> void:
 	Game.set_player_name(name_input.text)
 	name_panel.visible = false
-	# Update the label immediately so the name shows on this very line.
 	name_label.text = _speaker_name(_nodes["nodes"][_node_id])
 
 
@@ -291,6 +340,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _advance() -> void:
 	if name_panel.visible:
+		return
+	# Narration builds up one line per click.
+	if narration_label.visible and _narr_shown < _narr_lines.size():
+		_narr_shown += 1
+		_render_narration()
 		return
 	if _revealing:
 		text_label.visible_characters = -1
