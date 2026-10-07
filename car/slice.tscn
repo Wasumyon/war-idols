@@ -1,9 +1,11 @@
-[gd_scene load_steps=19 format=3 uid="uid://c2gyvqy7rpg6k"]
+[gd_scene load_steps=26 format=3 uid="uid://c2gyvqy7rpg6k"]
 
 [ext_resource type="Script" uid="uid://dhcujkhfhdqtd" path="res://slice/slice.gd" id="1_slice"]
 [ext_resource type="Script" uid="uid://bclthao11g0l8" path="res://slice/runner.gd" id="2_runner"]
 [ext_resource type="Script" uid="uid://ca1nwr46f2xss" path="res://slice/reticle.gd" id="3_reticle"]
 [ext_resource type="Script" uid="uid://byxla2m4wkuct" path="res://slice/lane_spawner.gd" id="4_spawner"]
+[ext_resource type="Script" path="res://slice/backdrop.gd" id="5_backdrop"]
+[ext_resource type="Script" path="res://slice/backdrop_layer.gd" id="6_layer"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
 sky_horizon_color = Color(0.55, 0.53, 0.5, 1)
@@ -37,6 +39,29 @@ albedo_color = Color(0.22, 0.22, 0.24, 1)
 
 [sub_resource type="BoxMesh" id="LineMesh_1"]
 size = Vector3(0.12, 0.02, 8000)
+
+[sub_resource type="StandardMaterial3D" id="BackSky_1"]
+shading_mode = 0
+disable_fog = true
+albedo_color = Color(0.62, 0.6, 0.58, 1)
+
+[sub_resource type="QuadMesh" id="BackQuad_1"]
+size = Vector2(1400, 800)
+
+[sub_resource type="StandardMaterial3D" id="BackFar_1"]
+shading_mode = 0
+disable_fog = true
+albedo_color = Color(0.45, 0.44, 0.4, 1)
+
+[sub_resource type="StandardMaterial3D" id="BackMid_1"]
+shading_mode = 0
+disable_fog = true
+albedo_color = Color(0.3, 0.29, 0.27, 1)
+
+[sub_resource type="StandardMaterial3D" id="BackNear_1"]
+shading_mode = 0
+disable_fog = true
+albedo_color = Color(0.18, 0.17, 0.16, 1)
 
 [sub_resource type="StandardMaterial3D" id="BodyMat_1"]
 albedo_color = Color(0.25, 0.45, 0.85, 1)
@@ -104,6 +129,40 @@ mesh = SubResource("LineMesh_1")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.02, -3600)
 material_override = SubResource("LineMat_1")
 mesh = SubResource("LineMesh_1")
+
+[node name="Backdrop" type="Node3D" parent="."]
+script = ExtResource("5_backdrop")
+
+[node name="Sky" type="MeshInstance3D" parent="Backdrop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 150, -420)
+material_override = SubResource("BackSky_1")
+cast_shadow = 0
+mesh = SubResource("BackQuad_1")
+script = ExtResource("6_layer")
+forward_factor = 0.01
+
+[node name="Far" type="MeshInstance3D" parent="Backdrop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 120, -340)
+material_override = SubResource("BackFar_1")
+cast_shadow = 0
+mesh = SubResource("BackQuad_1")
+script = ExtResource("6_layer")
+
+[node name="Mid" type="MeshInstance3D" parent="Backdrop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 90, -250)
+material_override = SubResource("BackMid_1")
+cast_shadow = 0
+mesh = SubResource("BackQuad_1")
+script = ExtResource("6_layer")
+forward_factor = 0.035
+
+[node name="Near" type="MeshInstance3D" parent="Backdrop"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 60, -160)
+material_override = SubResource("BackNear_1")
+cast_shadow = 0
+mesh = SubResource("BackQuad_1")
+script = ExtResource("6_layer")
+forward_factor = 0.06
 
 [node name="Runner" type="Node3D" parent="."]
 script = ExtResource("2_runner")

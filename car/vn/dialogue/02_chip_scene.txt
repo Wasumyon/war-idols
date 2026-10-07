@@ -1,0 +1,25 @@
+# War Idols - 02 - Chip scene
+#
+# Only the "delivery" line is canonical (design doc). The rest is scaffold -
+# replace with real writing. The choice is here to exercise the branch system.
+
+== chip_intro
+Chip: Don't you have delivery out here?
+
+Blockhead: We're 400 million klicks from anything that delivers.
+
+? Roll with it.
++ hype 5
++ drama 3
+-> rolling
+
+? Tell her to focus.
++ sympathy 5
+-> focus
+
+== focus
+Blockhead: Keep the lens up. That's the job.
+
+== rolling
+Chip: Then let's make some content.
+Blockhead: Camera's rolling.

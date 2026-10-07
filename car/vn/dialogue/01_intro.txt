@@ -1,0 +1,20 @@
+# War Idols - 01 - Intro (narration)
+#
+# Format:
+#   == label        labelled beat (jump target)
+#   Name: line      dialogue / narration line (BBCode allowed)
+#   ? choice text   a branch under the line above
+#   + stat n        effect for the branch above (or the beat, if no branch)
+#   -> label        jump; blank ends the scene (then the next chapter loads)
+#   # comment
+
+== intro
+Narrator: The Pioneer Project boom that brought my father to the Jovian moons is long over.
+Narrator: Its children are gig workers and burnouts.
+Narrator: Then the invasion changed everything.
+Narrator: Command sold "civilian war journalism" licenses to fund the war. Streamers with skimpy digital avatars did best.
+Narrator: So I partnered with a VTuber whose adult-content page wasn't paying.
+Narrator: Our contract: I keep her alive. She brings the charisma. Profits and costs split fifty-fifty.
+Narrator: If she dies, her kit goes to me - after a Space Vultures Guild inquest.
+Narrator: Hit a thousand subs and the hyperchats unlock. Minus an eighty percent platform cut.
+Narrator: The rules of the War Idols: [i]stay alive, and out-shock the competition.[/i]
