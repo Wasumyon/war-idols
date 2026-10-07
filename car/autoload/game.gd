@@ -18,10 +18,26 @@ var money := 0
 var day := 1
 var flags := {}
 
+## The player character's name. Empty until the player enters it.
+## Until then, Chip's nickname "Blockhead" is used.
+var player_name := ""
+
+
+func display_name() -> String:
+	var n := player_name.strip_edges()
+	return n if n != "" else "Blockhead"
+
+
+func set_player_name(raw: String) -> void:
+	var n := raw.strip_edges()
+	player_name = n if n != "" else "Commander"
+
 ## Story order. The VN walks these; add scenes here as you write them.
 var chapters: Array[String] = [
 	"res://vn/dialogue/01_intro.txt",
-	"res://vn/dialogue/02_chip_scene.txt",
+	"res://vn/dialogue/02_stream.txt",
+	"res://vn/dialogue/03_car.txt",
+	"res://vn/dialogue/04_mission_clear.txt",
 ]
 var chapter_index := 0
 

@@ -1,0 +1,31 @@
+# War Idols - 04 - Mission clear
+# Source: Stories/test.txt (Mission 1 clear).
+# NOTE: the canteen / shop spending lines were omitted per request.
+
+== mission_clear
+Player: [i]Cake walk.[/i]
+@ stage Holds his fist out
+Chip: Not bad, musclebrains.
+@ stage Pleading
+Chip: Buy me a round at the canteen for a job well done?
+
+? Anything for you babe
+-> c_babe
+
+? Alright, but just ONE this time
+-> c_one
+
+? Heh, you BUM!
+-> c_bum
+
+== c_babe
+Chip: Haha, what the hell is that? Never mind, I take it back!
+->
+
+== c_one
+Chip: WAHOO~! BOOZE!
+->
+
+== c_bum
+Chip: You cheapskate!
+->

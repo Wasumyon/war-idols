@@ -1,20 +1,26 @@
-# War Idols - 01 - Intro (narration)
-#
-# Format:
-#   == label        labelled beat (jump target)
-#   Name: line      dialogue / narration line (BBCode allowed)
-#   ? choice text   a branch under the line above
-#   + stat n        effect for the branch above (or the beat, if no branch)
-#   -> label        jump; blank ends the scene (then the next chapter loads)
-#   # comment
+# War Idols - 01 - Intro
+# Source: Stories/test.txt (Intro). Format reference: car/vn/vn.gd.
 
 == intro
-Narrator: The Pioneer Project boom that brought my father to the Jovian moons is long over.
-Narrator: Its children are gig workers and burnouts.
-Narrator: Then the invasion changed everything.
-Narrator: Command sold "civilian war journalism" licenses to fund the war. Streamers with skimpy digital avatars did best.
-Narrator: So I partnered with a VTuber whose adult-content page wasn't paying.
-Narrator: Our contract: I keep her alive. She brings the charisma. Profits and costs split fifty-fifty.
-Narrator: If she dies, her kit goes to me - after a Space Vultures Guild inquest.
-Narrator: Hit a thousand subs and the hyperchats unlock. Minus an eighty percent platform cut.
-Narrator: The rules of the War Idols: [i]stay alive, and out-shock the competition.[/i]
+Narrator: It doesn't matter how good or bad things get - even beneath the all-seeing red eye of Jupiter, everyone's gotta make a buck.
+Narrator: The boom times, when my pops moved out to the Jovian moons as a volunteer for the Giant Leap Pioneer Project, are long over.
+Narrator: The bubble dreams of our fathers popped. The lost children of that era lived as gig-economy freeters, junkies, and burnouts.
+Narrator: Many were gazing bleary-eyed at the end of a gunbarrel - until the invasion of Io.
+Narrator: But war is every fool's market, and whenever the bull comes to ride, sex and violence are top sellers.
+Narrator: There was plenty of the latter when the bugs came to Io. We even got some of the former when the lookieloos and digital nomads came.
+Narrator: The XO cut radio silence and started selling licenses for "civilian war journalism" to fund the war effort and keep morale up.
+Narrator: More for the Treasury Committee than for the actual soldiers and their families.
+Narrator: Streamers with scanty digital avatars did the best, no matter what any scholar or activist wanted to change about society.
+Narrator: Fresh meat looking to pay off mortgages and bad loans flooded the frontlines.
+Narrator: Everyone back home, too scared to dip in the blood, was nevertheless peckish for realistic, raw sadist or revenge footage.
+Narrator: My meal ticket came when one of these "Virtual Youtubers" wandered into the grinder armed with just her selfie stick.
+Narrator: Her JustFans wasn't paying the bills, and the war was perfect for her adrenaline-junkie nerves.
+Narrator: On a spit and a handshake, we became partners.
+Narrator: Our contract: I keep her breathing, and she shakes her big charisma for the audience. We cut it all fifty-fifty, profit and expense.
+Narrator: Death clause: all the belongings of the deceased transfer to the living member - after a Space Vultures Guild investigation confirms no foul play.
+Narrator: The moonchild of this beautiful relationship was our first thousand subs.
+Narrator: Donations with a message of support or snark - "hyperchats" - were now enabled. After a savage eighty percent cut for "taxes and services."
+Narrator: The low-hanging fruit was running out. Soon the crackpots and the spooks were hand in hand with the grunts in one symbiotic pool of entrepreneurship.
+Narrator: More and more rumblings of foul play and conspiracy started hitting the net - and making quick cash.
+Narrator: That said, the simplicity of war joined with the guarantee of return finally made the present clear, if not bright:
+Narrator: [i]Stay alive, and elbow out the competition with the wildest content you can get away with monetizing. Those are the rules of the War Idols.[/i]

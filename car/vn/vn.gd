@@ -7,10 +7,19 @@ extends Control
 ##   ? choice text     a branch under the line above
 ##   + stat n          effect for the branch above (or the beat, if no branch yet)
 ##   -> label          jump to a label; leave blank to end the scene
+##   @ verb args       staging for the NEXT line
 ##   # comment         ignored
 ##
-## Lines with no "== / ? / + / -> " prefix that look like "Name: text" are
-## dialogue. Beats flow top-to-bottom unless a "-> " jumps elsewhere.
+## @ VERBS
+##   @ stage <text>    a freeform stage direction; shown italic above the line
+##   @ input_name      open the name-entry panel while this line shows
+##   @ portrait <who>  show a portrait (not wired to art yet)
+##   @ sfx <name>      one-shot sound (not wired yet)
+##   @ call <scene>    hand off to another scene (not wired yet)
+##
+## SPEAKER
+##   "Player:" resolves to Game.display_name() - "Blockhead" until the player
+##   enters a name, then that name. "{player}" in the text expands the same way.
 
 const CHARS_PER_SEC := 45.0
 
@@ -28,9 +37,13 @@ var _char_count := 0
 @onready var text_label: RichTextLabel = $Box/Text
 @onready var choices: VBoxContainer = $Choices
 @onready var hint: Label = $Hint
+@onready var name_panel: PanelContainer = $NamePanel
+@onready var name_input: LineEdit = $NamePanel/VBox/NameInput
 
 
 func _ready() -> void:
+	name_input.text_submitted.connect(_on_name_submitted)
+	$NamePanel/VBox/Confirm.pressed.connect(_confirm_name)
 	var path := chapter_file if chapter_file != "" else Game.current_chapter()
 	_load(path)
 	_goto(str(_nodes.get("start", "")))
@@ -51,6 +64,7 @@ func _parse(text: String) -> void:
 	var blocks: Array = []
 	var labels := {}
 	var pending_label := ""
+	var pending_staging: Array[String] = []
 	var cur = null
 	var last_choice = null
 
@@ -62,6 +76,10 @@ func _parse(text: String) -> void:
 		if line.begins_with("=="):
 			pending_label = line.substr(2).strip_edges()
 			last_choice = null
+			continue
+
+		if line.begins_with("@"):
+			pending_staging.append(line.substr(1).strip_edges())
 			continue
 
 		if line.begins_with("?"):
@@ -101,18 +119,23 @@ func _parse(text: String) -> void:
 				"choices": [],
 				"next_label": "",
 				"force_end": false,
+				"staging": pending_staging.duplicate(),
 			}
 			pending_label = ""
+			pending_staging.clear()
 			last_choice = null
 			blocks.append(cur)
 
-	# label -> block index
+	# staging that trailed the last line (e.g. a closing "@ call").
+	if not pending_staging.is_empty() and not blocks.is_empty():
+		var last: Dictionary = blocks[blocks.size() - 1]
+		last["staging"] = Array(last["staging"]) + Array(pending_staging)
+
 	for i in blocks.size():
 		var lbl: String = str(blocks[i]["label"])
 		if lbl != "":
 			labels[lbl] = i
 
-	# blocks -> runtime nodes
 	var nodes := {}
 	for i in blocks.size():
 		var b: Dictionary = blocks[i]
@@ -120,6 +143,7 @@ func _parse(text: String) -> void:
 			"speaker": b["speaker"],
 			"text": b["text"],
 			"effects": b["effects"],
+			"staging": b["staging"],
 			"next": _resolve(str(b["next_label"]), bool(b["force_end"]), i, blocks, labels),
 			"choices": [],
 		}
@@ -158,8 +182,8 @@ func _goto(id: String) -> void:
 	var node: Dictionary = _nodes["nodes"][id]
 	_apply_effects(node.get("effects", {}))
 
-	name_label.text = str(node.get("speaker", ""))
-	text_label.text = str(node.get("text", ""))
+	name_label.text = _speaker_name(node)
+	text_label.text = _compose_text(node)
 	text_label.visible_characters = 0
 	_char_count = text_label.get_total_character_count()
 	_char_timer = 0.0
@@ -167,6 +191,54 @@ func _goto(id: String) -> void:
 
 	_clear_choices()
 	hint.text = ""
+	if _has_staging(node, "input_name"):
+		_show_name_input()
+
+
+func _speaker_name(node: Dictionary) -> String:
+	var spk := str(node.get("speaker", ""))
+	if spk == "Player" or spk == "{player}":
+		return Game.display_name()
+	return spk
+
+
+## Displayed text: "@ stage" directions become an italic block above the line,
+## and "{player}" expands to the player's display name.
+func _compose_text(node: Dictionary) -> String:
+	var shown: Array[String] = []
+	for d in node.get("staging", []):
+		var parts := str(d).split(" ", true, 1)
+		if parts.size() == 2 and parts[0] == "stage":
+			shown.append("(%s)" % parts[1])
+	var t := str(node.get("text", "")).replace("{player}", Game.display_name())
+	if not shown.is_empty():
+		t = "[i]%s[/i]\n%s" % ["\n".join(shown), t]
+	return t
+
+
+func _has_staging(node: Dictionary, verb: String) -> bool:
+	for d in node.get("staging", []):
+		var parts := str(d).split(" ", true, 1)
+		if parts.size() >= 1 and parts[0] == verb:
+			return true
+	return false
+
+
+func _show_name_input() -> void:
+	name_panel.visible = true
+	name_input.text = Game.player_name
+	name_input.grab_focus()
+
+
+func _on_name_submitted(_text: String) -> void:
+	_confirm_name()
+
+
+func _confirm_name() -> void:
+	Game.set_player_name(name_input.text)
+	name_panel.visible = false
+	# Update the label immediately so the name shows on this very line.
+	name_label.text = _speaker_name(_nodes["nodes"][_node_id])
 
 
 func _clear_choices() -> void:
@@ -209,6 +281,8 @@ func _apply_effects(effects: Dictionary) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if name_panel.visible:
+		return   # name entry is modal
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_advance()
 	elif event is InputEventKey and event.pressed and (event.keycode == KEY_SPACE or event.keycode == KEY_ENTER):
@@ -216,6 +290,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _advance() -> void:
+	if name_panel.visible:
+		return
 	if _revealing:
 		text_label.visible_characters = -1
 		_revealing = false

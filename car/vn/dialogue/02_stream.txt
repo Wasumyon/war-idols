@@ -1,0 +1,28 @@
+# War Idols - 02 - Opening stream
+# Source: Stories/test.txt (Opening scene).
+
+== stream
+@ stage Static
+@ stage Banging on the camera, cartoon noises
+@ stage Waving at camera, beaming but sweating under a face mask
+Chip: Boungiorno~ Privet~ Ni Hao~ my little Chippers! How's the weather at home?
+Chip: It's another mind-melting hot and toxic foggy day on Io! If you ask me, the pioneers did a little too well on the terraformers. Augh~
+Chip: But still, let's kick some Sectoid ass today so we can finally turn down those sulphur spitters.
+@ stage Stress sigh
+@ stage Feigned crying, rubbing eyes
+Chip: But the front line is sooooo slow today.
+Chip: I don't want to bore you, my loyal, hunky, sexy audience - or else you'll abandon poor Chipper on the street corners of Tarsus Regio.
+Chip: And I'll be forced to do this... and do that... and you wouldn't want that, would you~!?
+@ stage Peeks one eye
+@ stage Angry
+Chip: Mods!!! Ban them!!! Ban my chatttt!!!~
+@ stage Ahem, clears throat
+Chip: But don't worry. Don't ever say lil Chipper didn't do anything for chat.
+Chip: A little birdie told me a big push is on its way at 0400 in L2.
+Chip: Who's the birdie? I can't tell you about Ottenok, chat. It's a secret~!
+Chip: Anyways, it's going to be the biggest action we've had in months. Bombs like da-da-da-da, and shrapnel, kaboom~ I can't wait, can you?
+@ stage Hearts in eyes, steaming, excited
+Chip: Remember, if we hit five thousand subs today I can afford that new Textra-Life body armour!
+Chip: And if we hit the "fuck the optics" goal at ten thousand, I can finally replace this trash with some real polycarbon and you can see your oshi's charming smile in 4K~
+Chip: And remember, we have to hit the ten-thousand-dollar "kill the taxman" goal every five days to keep this operation afloat. So be generous, chat!!
+@ stage Hand on camera, cuts the feed

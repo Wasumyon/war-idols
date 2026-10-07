@@ -1,0 +1,26 @@
+# War Idols - 03 - The car
+# Source: Stories/test.txt (Opening scene 2).
+# "Player:" shows "Blockhead" until the name is entered, then the chosen name.
+
+== car
+@ stage Sigh
+Player: Didn't I tell you ixnay on the Ottenokay?
+Chip: Hah! You worry wort! Normies are dumb, there's no way they'd pick up on that. What would you do without me holding your hand through the Nu-net?
+Player: [i]You never know who's going to be watching. We're dead without our opsec.[/i]
+@ stage Winds up a punch
+Chip: (Wait! Wait! Let me explain, you brute!)
+Chip: Don't be such a sourpuss! With a mysterious handle like that, we'll be the first result for SOE on his name from now on.
+Chip: And now that he'll get hundreds of hits for his info, we'll capture all that future hype and can press for better prices from that cheapskate.
+Player: What if we get him caught? We'd paint a target on our backs.
+Chip: Angry at us? He's going to be R-I-C-H, RICH!
+Player: [i]You have a point there. Just try to be more careful.[/i]
+Chip: And we'll be R-I-C-H too! You oughta trust me more, meathead.
+Player: ...
+Player: Alright, I'll admit you got some business chops. But remember - without me, you'd be without a head.
+@ stage Sticks tongue out
+Chip: Just don't drive us into a ditch. A lover's suicide is so last millenia~
+@ stage She holds out a hand.
+@ input_name
+Chip: So what do I call you, partner?
+@ stage Starts up the engines and turrets
+@ call slice
