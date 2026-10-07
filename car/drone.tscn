@@ -1,0 +1,24 @@
+[gd_scene load_steps=3 format=3 uid="uid://bjug4yjhkvmjk"]
+
+[ext_resource type="PackedScene" uid="uid://ctduhbjqp1f3e" path="res://droneEdited20.glb" id="1_uvgqj"]
+[ext_resource type="Script" uid="uid://0nu5ke7s0ja6" path="res://mob.gd" id="2_d5du7"]
+
+[node name="droneEdited20" instance=ExtResource("1_uvgqj")]
+script = ExtResource("2_d5du7")
+
+[node name="Skeleton3D" parent="Armature" index="0"]
+bones/2/rotation = Quaternion(0.605878, 0.364571, 0.364571, -0.605878)
+bones/3/rotation = Quaternion(0.395604, -0.00314058, 8.75908e-05, 0.918416)
+bones/4/rotation = Quaternion(-0.605878, 0.364571, 0.364571, 0.605878)
+bones/5/rotation = Quaternion(0.395603, 0.00314076, -8.76315e-05, 0.918416)
+bones/6/rotation = Quaternion(0.363803, 0.60634, 0.606339, -0.363803)
+bones/7/rotation = Quaternion(0.395604, -0.00314059, 8.75975e-05, 0.918416)
+bones/8/rotation = Quaternion(-0.363803, 0.60634, 0.606339, 0.363803)
+bones/9/rotation = Quaternion(0.395604, 0.00314059, -8.75975e-05, 0.918416)
+bones/10/rotation = Quaternion(0.999977, -3.5759e-08, -3.57594e-08, 0.00677374)
+bones/11/rotation = Quaternion(-0.789212, 1.52805e-08, 3.29756e-08, 0.614121)
+bones/12/position = Vector3(0.265648, 1.08622, 0.101666)
+bones/13/position = Vector3(-0.265648, 1.08622, 0.101666)
+
+[node name="AnimationPlayer" parent="." index="1"]
+autoplay = "idle"

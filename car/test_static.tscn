@@ -1,0 +1,133 @@
+[gd_scene load_steps=14 format=3 uid="uid://dnt2uln7v4pbm"]
+
+[ext_resource type="Script" uid="uid://cw80rttykkp67" path="res://test_static.gd" id="1_2k32k"]
+[ext_resource type="Script" uid="uid://p0hgcptml1ik" path="res://spawner.gd" id="2_ud1d5"]
+[ext_resource type="PackedScene" uid="uid://bjug4yjhkvmjk" path="res://drone.tscn" id="3_unpop"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_2k32k"]
+sky_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+ground_horizon_color = Color(0.662243, 0.671743, 0.686743, 1)
+
+[sub_resource type="Sky" id="Sky_ud1d5"]
+sky_material = SubResource("ProceduralSkyMaterial_2k32k")
+
+[sub_resource type="Environment" id="Environment_unpop"]
+background_mode = 2
+sky = SubResource("Sky_ud1d5")
+tonemap_mode = 2
+glow_enabled = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_ud1d5"]
+size = Vector3(1, 0.475, 2.25)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_unpop"]
+radius = 0.1
+height = 0.6
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_u5gfb"]
+top_radius = 0.3
+bottom_radius = 0.3
+height = 1.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oeke3"]
+albedo_color = Color(0.576471, 0.486275, 0, 1)
+
+[sub_resource type="QuadMesh" id="QuadMesh_c5abm"]
+material = SubResource("StandardMaterial3D_oeke3")
+size = Vector2(101.495, 120)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4guud"]
+albedo_color = Color(0.607843, 0.411765, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_m5o86"]
+material = SubResource("StandardMaterial3D_4guud")
+size = Vector3(7.945, 120, 0)
+
+[node name="testStatic" type="Node3D"]
+script = ExtResource("1_2k32k")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_unpop")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="car" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.582493, 0)
+mesh = SubResource("BoxMesh_ud1d5")
+
+[node name="charCam" type="MeshInstance3D" parent="car"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.182678, 0.152611, 0.845711)
+mesh = SubResource("CapsuleMesh_unpop")
+
+[node name="charGun" type="MeshInstance3D" parent="car"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.182678, 0.152611, 0.411089)
+mesh = SubResource("CapsuleMesh_unpop")
+
+[node name="wheel" type="MeshInstance3D" parent="car"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, -0.243591, -0.514915)
+mesh = SubResource("CylinderMesh_u5gfb")
+
+[node name="wheel2" type="MeshInstance3D" parent="car"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, -0.243591, 0.616112)
+mesh = SubResource("CylinderMesh_u5gfb")
+
+[node name="terrain" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("QuadMesh_c5abm")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="terrain"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.3644e-09, 0.0312139)
+mesh = SubResource("BoxMesh_m5o86")
+
+[node name="camMain" type="Camera3D" parent="."]
+transform = Transform3D(0.126199, 0.704507, -0.698386, 0, 0.704015, 0.710185, 0.992005, -0.0896246, 0.0888459, 0, 0, 0)
+current = true
+fov = 42.0
+
+[node name="CamTop" type="Camera3D" parent="."]
+transform = Transform3D(0.156435, 0.618218, -0.770282, 0, 0.779884, 0.625924, 0.987688, -0.0979167, 0.122002, -20.0723, 17.9759, 2.56509)
+fov = 42.0
+
+[node name="CamR" type="Camera3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0.0436194, -0.999048, 0, 0.999048, 0.0436194, 1, 1.90666e-09, -4.36698e-08, -3.21, 1.88, 0.08)
+fov = 42.0
+
+[node name="CamL" type="Camera3D" parent="."]
+transform = Transform3D(-4.37114e-08, -0.0436194, 0.999048, 0, 0.999048, 0.0436194, -1, 1.90666e-09, -4.36698e-08, 3.21, 1.88, 0.08)
+fov = 42.0
+
+[node name="CamFL" type="Camera3D" parent="."]
+transform = Transform3D(0.707107, -0.0308436, 0.706434, 0, 0.999048, 0.0436194, -0.707107, -0.0308436, 0.706434, 2.15428, 1.88, 2.49276)
+fov = 42.0
+
+[node name="CamFR" type="Camera3D" parent="."]
+transform = Transform3D(0.707107, 0.0308436, -0.706434, 0, 0.999048, 0.0436194, 0.707107, -0.0308436, 0.706434, -2.154, 1.88, 2.493)
+fov = 42.0
+
+[node name="CamBL" type="Camera3D" parent="."]
+transform = Transform3D(-0.707107, -0.0308436, 0.706434, 0, 0.999048, 0.0436194, -0.707107, 0.0308436, -0.706434, 2.09452, 1.88, -1.9987)
+fov = 42.0
+
+[node name="CamBR" type="Camera3D" parent="."]
+transform = Transform3D(-0.707107, 0.0308436, -0.706434, 0, 0.999048, 0.0436194, 0.707107, 0.0308436, -0.706434, -2.095, 1.88, -1.999)
+fov = 42.0
+
+[node name="CamB" type="Camera3D" parent="."]
+transform = Transform3D(-1, 3.81333e-09, -8.73396e-08, 0, 0.999048, 0.0436194, 8.74228e-08, 0.0436194, -0.999048, 0, 1.88, -2.96388)
+fov = 42.0
+
+[node name="CamF" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.999048, 0.0436194, 0, -0.0436194, 0.999048, 0, 1.88, 3.5568)
+fov = 42.0
+
+[node name="spawner" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -66.882)
+script = ExtResource("2_ud1d5")
+mob = ExtResource("3_unpop")
+
+[node name="Timer" type="Timer" parent="spawner"]
+wait_time = 0.3
+
+[connection signal="timeout" from="spawner/Timer" to="spawner" method="_on_timer_timeout"]

@@ -1,0 +1,193 @@
+[gd_scene load_steps=19 format=3 uid="uid://c2gyvqy7rpg6k"]
+
+[ext_resource type="Script" uid="uid://dhcujkhfhdqtd" path="res://slice/slice.gd" id="1_slice"]
+[ext_resource type="Script" uid="uid://bclthao11g0l8" path="res://slice/runner.gd" id="2_runner"]
+[ext_resource type="Script" uid="uid://ca1nwr46f2xss" path="res://slice/reticle.gd" id="3_reticle"]
+[ext_resource type="Script" uid="uid://byxla2m4wkuct" path="res://slice/lane_spawner.gd" id="4_spawner"]
+
+[sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
+sky_horizon_color = Color(0.55, 0.53, 0.5, 1)
+ground_horizon_color = Color(0.4, 0.36, 0.3, 1)
+
+[sub_resource type="Sky" id="Sky_1"]
+sky_material = SubResource("SkyMat_1")
+
+[sub_resource type="Environment" id="Env_1"]
+background_mode = 2
+sky = SubResource("Sky_1")
+tonemap_mode = 2
+glow_enabled = true
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.55, 0.53, 0.5, 1)
+fog_light_energy = 0.8
+fog_density = 1.0
+fog_sky_affect = 0.0
+fog_depth_begin = 130.0
+fog_depth_end = 480.0
+
+[sub_resource type="StandardMaterial3D" id="GroundMat_1"]
+albedo_color = Color(0.16, 0.15, 0.14, 1)
+
+[sub_resource type="PlaneMesh" id="GroundMesh_1"]
+size = Vector2(200, 8000)
+
+[sub_resource type="StandardMaterial3D" id="LineMat_1"]
+albedo_color = Color(0.22, 0.22, 0.24, 1)
+
+[sub_resource type="BoxMesh" id="LineMesh_1"]
+size = Vector3(0.12, 0.02, 8000)
+
+[sub_resource type="StandardMaterial3D" id="BodyMat_1"]
+albedo_color = Color(0.25, 0.45, 0.85, 1)
+
+[sub_resource type="BoxMesh" id="BodyMesh_1"]
+size = Vector3(2, 1.1, 4)
+
+[sub_resource type="StandardMaterial3D" id="StreamerMat_1"]
+albedo_color = Color(1, 0.2, 0.6, 1)
+emission_enabled = true
+emission = Color(0.5, 0.05, 0.3, 1)
+
+[sub_resource type="SphereMesh" id="StreamerMesh_1"]
+radius = 0.35
+height = 0.7
+
+[sub_resource type="BoxShape3D" id="HitboxShape_1"]
+size = Vector3(2.4, 1.6, 4.5)
+
+[sub_resource type="Shader" id="VigShader_1"]
+code = "shader_type canvas_item;
+uniform float intensity : hint_range(0.0, 1.0) = 0.3;
+void fragment() {
+	vec2 uv = UV - vec2(0.5);
+	float d = length(uv);
+	float v = smoothstep(0.15, 0.95, d) * intensity;
+	COLOR = vec4(0.0, 0.0, 0.0, v);
+}"
+
+[sub_resource type="ShaderMaterial" id="VigMat_1"]
+shader = SubResource("VigShader_1")
+shader_parameter/intensity = 0.3
+
+[node name="Slice" type="Node3D"]
+script = ExtResource("1_slice")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_1")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3600)
+material_override = SubResource("GroundMat_1")
+mesh = SubResource("GroundMesh_1")
+
+[node name="LaneLine1" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.02, -3600)
+material_override = SubResource("LineMat_1")
+mesh = SubResource("LineMesh_1")
+
+[node name="LaneLine2" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.02, -3600)
+material_override = SubResource("LineMat_1")
+mesh = SubResource("LineMesh_1")
+
+[node name="LaneLine3" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.02, -3600)
+material_override = SubResource("LineMat_1")
+mesh = SubResource("LineMesh_1")
+
+[node name="LaneLine4" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.02, -3600)
+material_override = SubResource("LineMat_1")
+mesh = SubResource("LineMesh_1")
+
+[node name="Runner" type="Node3D" parent="."]
+script = ExtResource("2_runner")
+
+[node name="Body" type="MeshInstance3D" parent="Runner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+material_override = SubResource("BodyMat_1")
+mesh = SubResource("BodyMesh_1")
+
+[node name="Streamer" type="MeshInstance3D" parent="Runner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
+material_override = SubResource("StreamerMat_1")
+mesh = SubResource("StreamerMesh_1")
+
+[node name="Camera3D" type="Camera3D" parent="Runner"]
+transform = Transform3D(1, 0, 0, 0, 0.9982, -0.059964, 0, 0.059964, 0.9982, 0, 3.5, 7)
+fov = 78.0
+
+[node name="Hitbox" type="Area3D" parent="Runner"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Runner/Hitbox"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
+shape = SubResource("HitboxShape_1")
+
+[node name="Spawner" type="Node3D" parent="."]
+script = ExtResource("4_spawner")
+
+[node name="RunTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Vignette" type="ColorRect" parent="HUD"]
+material = SubResource("VigMat_1")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Reticle" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("3_reticle")
+
+[node name="Points" type="Label" parent="HUD"]
+offset_left = 16.0
+offset_top = 12.0
+offset_right = 320.0
+offset_bottom = 40.0
+text = "Footage: 0"
+
+[node name="Shields" type="Label" parent="HUD"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -220.0
+offset_top = 12.0
+offset_right = -16.0
+offset_bottom = 40.0
+text = "Shields: 3"
+horizontal_alignment = 2
+
+[node name="Time" type="Label" parent="HUD"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -70.0
+offset_top = 12.0
+offset_right = 70.0
+offset_bottom = 40.0
+text = "01:30"
+horizontal_alignment = 1
+
+[node name="Speed" type="Label" parent="HUD"]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = -40.0
+offset_right = 220.0
+offset_bottom = -12.0
+text = "26 m/s"

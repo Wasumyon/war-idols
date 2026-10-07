@@ -7,3 +7,12 @@ desktop.ini
 # Microsoft Word lock/owner files
 ~$*.docx
 ~$*.doc
+
+# Godot generated files (never commit these)
+.godot/
+export_presets.cfg
+*.translation
+
+# Archives / backups (redundant with tracked folders)
+*.rar
+*.zip

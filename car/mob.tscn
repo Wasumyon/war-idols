@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://bsa6kc43x6tft"]
+
+[ext_resource type="Script" uid="uid://0nu5ke7s0ja6" path="res://mob.gd" id="1_dy6sc"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_jfba5"]
+size = Vector3(0.4, 0.2, 0.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dy6sc"]
+size = Vector3(0.401581, 0.199707, 0.406982)
+
+[node name="mob" type="Node3D"]
+script = ExtResource("1_dy6sc")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_jfba5")
+
+[node name="RigidBody3D" type="RigidBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="RigidBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00114441, -0.00268555, 0.00109863)
+shape = SubResource("BoxShape3D_dy6sc")

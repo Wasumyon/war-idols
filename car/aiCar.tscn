@@ -1,0 +1,16 @@
+[gd_scene load_steps=4 format=3 uid="uid://dfo08oihxx5ot"]
+
+[ext_resource type="Script" uid="uid://bt4a0btfu71eg" path="res://aiCar.gd" id="1_d2lkf"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_b7sea"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_cca1s"]
+
+[node name="RigidBody3D" type="RigidBody3D"]
+script = ExtResource("1_d2lkf")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_b7sea")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_cca1s")

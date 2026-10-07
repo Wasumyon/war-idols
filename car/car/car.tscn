@@ -1,0 +1,77 @@
+[gd_scene load_steps=7 format=3 uid="uid://dt56f6nkgw7ya"]
+
+[ext_resource type="Script" uid="uid://cwhlo0c2b3jyb" path="res://car/car.gd" id="1_2gitb"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_2gitb"]
+bounce = 0.1
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_dxy33"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dxy33"]
+albedo_color = Color(0.290196, 1, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hkabp"]
+size = Vector3(1, 0.5, 2)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_jpe8o"]
+top_radius = 0.2
+bottom_radius = 0.2
+height = 0.2
+
+[node name="car" type="Node3D"]
+script = ExtResource("1_2gitb")
+
+[node name="ball" type="RigidBody3D" parent="."]
+physics_material_override = SubResource("PhysicsMaterial_2gitb")
+gravity_scale = 10.0
+linear_damp = 2.0
+angular_damp = 5.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ball"]
+shape = SubResource("SphereShape3D_dxy33")
+
+[node name="model" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+
+[node name="body" type="MeshInstance3D" parent="model"]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -4.75403e-05, 0.540256, 0.008782)
+material_override = SubResource("StandardMaterial3D_dxy33")
+mesh = SubResource("BoxMesh_hkabp")
+skeleton = NodePath("../..")
+
+[node name="wheel_fl" type="MeshInstance3D" parent="model"]
+transform = Transform3D(4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, -3.82137e-15, -8.74228e-08, -1, -0.449988, 0.205058, -0.592035)
+mesh = SubResource("CylinderMesh_jpe8o")
+skeleton = NodePath("../..")
+
+[node name="wheel_bl" type="MeshInstance3D" parent="model"]
+transform = Transform3D(4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, -3.82137e-15, -8.74228e-08, -1, -0.449988, 0.205058, 0.598622)
+mesh = SubResource("CylinderMesh_jpe8o")
+skeleton = NodePath("../..")
+
+[node name="wheel_fr" type="MeshInstance3D" parent="model"]
+transform = Transform3D(4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, -3.82137e-15, -8.74228e-08, -1, 0.449952, 0.205058, -0.592035)
+mesh = SubResource("CylinderMesh_jpe8o")
+skeleton = NodePath("../..")
+
+[node name="wheel_br" type="MeshInstance3D" parent="model"]
+transform = Transform3D(4.37114e-08, 1, -8.74228e-08, 1, -4.37114e-08, 0, -3.82137e-15, -8.74228e-08, -1, 0.449952, 0.205058, 0.598621)
+mesh = SubResource("CylinderMesh_jpe8o")
+skeleton = NodePath("../..")
+
+[node name="Camera3D" type="Camera3D" parent="model"]
+transform = Transform3D(1, 0, 0, 0, 0.976672, 0.214735, 0, -0.214735, 0.976672, 0, 2.28812, 2.5354)
+fov = 80.0
+
+[node name="driftTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[node name="boostTimer" type="Timer" parent="."]
+wait_time = 0.8
+one_shot = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[connection signal="timeout" from="driftTimer" to="." method="_on_drift_timer_timeout"]
+[connection signal="timeout" from="boostTimer" to="." method="_on_boost_timer_timeout"]
