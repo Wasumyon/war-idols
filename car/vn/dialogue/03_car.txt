@@ -1,6 +1,30 @@
 # War Idols - 03 - The car
 # Source: Stories/test.txt (Opening scene 2).
+#
+# --- FORMAT REFERENCE -------------------------------------------------------
+# LINE TYPES
+#   Name: text      dialogue  -> bottom box, name label, typewriter
+#   text            narration -> full screen, no name, one line added per click
+#   ? choice text   a branch under the line above
+#   + stat n        effect for the branch/line above  (e.g. + hype 5)
+#   -> label        jump to a beat; blank ends the scene
+#   == label        a named beat to jump to
+#   # comment       ignored
+#
+# DIRECTIVES  (own line; applies to the NEXT line)
+#   @ stage <text>  stage direction -> italic line above the dialogue
+#   @ fullscreen    force the full-screen narration look
+#   @ box           force the bottom dialogue box
+#   @ center        centre the text
+#   @ right         right-align the text
+#   @ small         smaller text
+#   @ large         larger text
+#   @ input_name    open the name-entry panel
+#   @ sfx <name>    play vn/sfx/<name>.ogg|wav|mp3 (one-shot)
+#   @ music <name>  swap looping music; "@ music stop" to stop
+#
 # "Player:" shows "Blockhead" until the name is entered, then the chosen name.
+# ---------------------------------------------------------------------------
 
 == car
 @ stage Sigh

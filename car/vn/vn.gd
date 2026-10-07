@@ -1,30 +1,40 @@
 extends Control
 ## Kinetic-VN driver. Reads a plain-text script - no JSON, no build step.
 ##
-## FORMAT
-##   == label          start a labelled beat (a jump target)
-##   Name: line        a dialogue line (BBCode allowed)
-##   (no colon) line   NARRATION - unattributed, full screen. Consecutive
-##                     narration lines merge into one block.
-##   Narrator: line    same as above (kept for readability); never shows a name.
+## LINE TYPES
+##   Name: text        dialogue  -> bottom box, name label, typewriter
+##   text / Narrator:  narration -> full screen, no name, one line added per click
 ##   ? choice text     a branch under the line above
-##   + stat n          effect for the branch above (or the beat, if no branch yet)
-##   -> label          jump to a label; leave blank to end the scene
-##   @ verb args       staging for the NEXT line
+##   + stat n          effect for the branch/line above (e.g. + hype 5)
+##   -> label          jump to a label; blank ends the scene
+##   == label          a named beat to jump to
 ##   # comment         ignored
 ##
-## @ VERBS
-##   @ stage <text>    a freeform stage direction; shown italic above the line
-##   @ input_name      open the name-entry panel while this line shows
+## DIRECTIVES  (own line; applies to the NEXT line)
+##   @ stage <text>    stage direction -> italic line above the dialogue
+##   @ fullscreen      force the full-screen narration look
+##   @ box             force the bottom dialogue box
+##   @ center          centre the text
+##   @ right           right-align the text
+##   @ small           smaller text
+##   @ large           larger text
+##   @ input_name      open the name-entry panel
+##   @ sfx <name>      play car/vn/sfx/<name>.ogg|wav|mp3 (one-shot)
+##   @ music <name>    swap the looping music; "@ music stop" stops it
 ##   @ portrait <who>  show a portrait (not wired to art yet)
 ##   @ sfx <name>      one-shot sound (not wired yet)
 ##   @ call <scene>    hand off to another scene (not wired yet)
 ##
-## SPEAKER
-##   "Player:" resolves to Game.display_name() - "Blockhead" until the player
-##   enters a name, then that name. "{player}" in the text expands the same way.
+## HOW A LINE IS CLASSIFIED: if the text before the first ":" is a single word
+## (no spaces), it's a speaker; otherwise the whole line is narration. So
+## "Chip: hi" is dialogue, but "Our contract: split 50/50" is narration.
+##
+## "Player:" resolves to Game.display_name() - "Blockhead" until the player
+## enters a name, then that name. "{player}" in text expands the same way.
 
 const CHARS_PER_SEC := 45.0
+const SFX_DIR := "res://vn/sfx/"
+const SFX_EXTS := ["ogg", "wav", "mp3"]
 
 ## Leave blank to play through Game.chapters in order; set a path to test one file.
 @export var chapter_file := ""
@@ -46,6 +56,8 @@ var _narr_shown := 0
 @onready var hint: Label = $Hint
 @onready var name_panel: PanelContainer = $NamePanel
 @onready var name_input: LineEdit = $NamePanel/VBox/NameInput
+@onready var sfx_player: AudioStreamPlayer = $Sfx
+@onready var music_player: AudioStreamPlayer = $Music
 
 
 func _ready() -> void:
@@ -116,22 +128,21 @@ func _parse(text: String) -> void:
 				cur["force_end"] = (lbl == "")
 		else:
 			var spk := ""
-			var body := ""
+			var body := line
 			var i := line.find(":")
-			if i >= 0:
-				spk = line.substr(0, i).strip_edges()
-				body = line.substr(i + 1).strip_edges()
-			else:
-				body = line   # a bare line is narration
+			if i > 0:
+				var prefix := line.substr(0, i).strip_edges()
+				if prefix != "" and not prefix.contains(" ") and prefix.length() <= 24:
+					spk = prefix
+					body = line.substr(i + 1).strip_edges()
 			var is_narr: bool = spk == "" or spk == "Narrator" or spk == "~"
 
-			# Merge consecutive narration into one full-screen block.
-			if is_narr and not blocks.is_empty():
+			# Merge consecutive narration into a single full-screen block.
+			# A staged line stands alone so its directives don't leak.
+			if is_narr and pending_staging.is_empty() and not blocks.is_empty():
 				var prev: Dictionary = blocks[blocks.size() - 1]
-				if prev["narration"] and prev["choices"].is_empty() and prev["next_label"] == "" and not prev["force_end"]:
+				if prev["narration"] and prev["staging"].is_empty() and prev["choices"].is_empty() and prev["next_label"] == "" and not prev["force_end"]:
 					prev["text"] = str(prev["text"]) + "\n" + body
-					prev["staging"] = Array(prev["staging"]) + Array(pending_staging)
-					pending_staging.clear()
 					cur = prev
 					last_choice = null
 					continue
@@ -208,13 +219,19 @@ func _goto(id: String) -> void:
 	_node_id = id
 	var node: Dictionary = _nodes["nodes"][id]
 	_apply_effects(node.get("effects", {}))
+	_handle_audio(node)
 
 	_clear_choices()
 	hint.text = ""
 
+	var fullscreen: bool = bool(node.get("narration", false))
+	if _has_staging(node, "fullscreen"):
+		fullscreen = true
+	if _has_staging(node, "box"):
+		fullscreen = false
+
 	var body := _compose_text(node)
-	if bool(node.get("narration", false)):
-		# Unattributed, full screen. Lines accumulate one click at a time.
+	if fullscreen:
 		box.visible = false
 		portrait.visible = false
 		narration_label.visible = true
@@ -252,8 +269,8 @@ func _speaker_name(node: Dictionary) -> String:
 	return spk
 
 
-## Displayed text: "@ stage" directions become an italic block above the line,
-## and "{player}" expands to the player's display name.
+## Displayed text: staging becomes an italic block on top, and directives add
+## alignment / size via BBCode.
 func _compose_text(node: Dictionary) -> String:
 	var shown: Array[String] = []
 	for d in node.get("staging", []):
@@ -263,6 +280,14 @@ func _compose_text(node: Dictionary) -> String:
 	var t := str(node.get("text", "")).replace("{player}", Game.display_name())
 	if not shown.is_empty():
 		t = "[i]%s[/i]\n%s" % ["\n".join(shown), t]
+	if _has_staging(node, "center"):
+		t = "[center]%s[/center]" % t
+	elif _has_staging(node, "right"):
+		t = "[right]%s[/right]" % t
+	if _has_staging(node, "small"):
+		t = "[font_size=22]%s[/font_size]" % t
+	elif _has_staging(node, "large"):
+		t = "[font_size=40]%s[/font_size]" % t
 	return t
 
 
@@ -272,6 +297,59 @@ func _has_staging(node: Dictionary, verb: String) -> bool:
 		if parts.size() >= 1 and parts[0] == verb:
 			return true
 	return false
+
+
+## Plays any @ sfx / @ music directives attached to this line.
+func _handle_audio(node: Dictionary) -> void:
+	for d in node.get("staging", []):
+		var parts := str(d).split(" ", true, 1)
+		if parts.size() < 2:
+			continue
+		if parts[0] == "sfx":
+			_play_sfx(parts[1].strip_edges())
+		elif parts[0] == "music":
+			_play_music(parts[1].strip_edges())
+
+
+func _load_sound(name: String) -> AudioStream:
+	if name == "":
+		return null
+	if name.begins_with("res://"):
+		return load(name) as AudioStream
+	for ext in SFX_EXTS:
+		var p := "%s%s.%s" % [SFX_DIR, name, ext]
+		if ResourceLoader.exists(p):
+			return load(p) as AudioStream
+	return null
+
+
+func _play_sfx(name: String) -> void:
+	var s := _load_sound(name)
+	if s == null:
+		push_warning("VN: missing sfx '%s' (expected %s%s.ogg|wav|mp3)" % [name, SFX_DIR, name])
+		return
+	sfx_player.stream = s
+	sfx_player.play()
+
+
+func _play_music(name: String) -> void:
+	if name == "" or name == "stop":
+		music_player.stop()
+		return
+	var s := _load_sound(name)
+	if s == null:
+		push_warning("VN: missing music '%s' (expected %s%s.ogg|wav|mp3)" % [name, SFX_DIR, name])
+		return
+	if music_player.stream == s and music_player.playing:
+		return
+	if s is AudioStreamOggVorbis:
+		s.loop = true
+	elif s is AudioStreamMP3:
+		s.loop = true
+	elif s is AudioStreamWAV:
+		s.loop_mode = AudioStreamWAV.LOOP_FORWARD
+	music_player.stream = s
+	music_player.play()
 
 
 func _show_name_input() -> void:

@@ -101,6 +101,10 @@ grow_horizontal = 2
 grow_vertical = 2
 bbcode_enabled = true
 
+[node name="Sfx" type="AudioStreamPlayer" parent="."]
+
+[node name="Music" type="AudioStreamPlayer" parent="."]
+
 [node name="NamePanel" type="PanelContainer" parent="."]
 visible = false
 layout_mode = 0
