@@ -11,17 +11,14 @@
 #   == label        a named beat to jump to
 #   # comment       ignored
 #
-# DIRECTIVES  (own line; applies to the NEXT line)
-#   @ stage <text>  stage direction -> italic line above the dialogue
-#   @ fullscreen    force the full-screen narration look
-#   @ box           force the bottom dialogue box
-#   @ center        centre the text
-#   @ right         right-align the text
-#   @ small         smaller text
-#   @ large         larger text
-#   @ input_name    open the name-entry panel
-#   @ sfx <name>    play vn/sfx/<name>.ogg|wav|mp3 (one-shot)
-#   @ music <name>  swap looping music; "@ music stop" to stop
+# DIRECTIVES - two kinds
+#   MODE (sticky; lasts until changed - add "off" to undo):
+#     @ fullscreen / @ fullscreen off        @ box  (= fullscreen off)
+#     @ center / @ center off                @ right / @ right off
+#     @ small / @ small off                  @ large / @ large off
+#     @ music <name>  (loops; @ music stop)
+#   EVENT (one-shot; happens on this line only):
+#     @ stage <text>   @ sfx <name>   @ shake   @ input_name
 #
 # "Player:" shows "Blockhead" until the name is entered, then the chosen name.
 # ---------------------------------------------------------------------------

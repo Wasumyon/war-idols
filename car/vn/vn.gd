@@ -2,32 +2,34 @@ extends Control
 ## Kinetic-VN driver. Reads a plain-text script - no JSON, no build step.
 ##
 ## LINE TYPES
-##   Name: text        dialogue  -> bottom box, name label, typewriter
-##   text / Narrator:  narration -> full screen, no name, one line added per click
-##   ? choice text     a branch under the line above
-##   + stat n          effect for the branch/line above (e.g. + hype 5)
-##   -> label          jump to a label; blank ends the scene
-##   == label          a named beat to jump to
-##   # comment         ignored
+##   Name: text      dialogue  -> bottom box, name label, typewriter
+##   text            narration -> full screen, no name, one line added per click
+##   ? choice text   a branch under the line above
+##   + stat n        effect for the branch/line above (e.g. + hype 5)
+##   -> label        jump to a label; blank ends the scene
+##   == label        a named beat to jump to
+##   # comment       ignored
 ##
-## DIRECTIVES  (own line; applies to the NEXT line)
-##   @ stage <text>    stage direction -> italic line above the dialogue
-##   @ fullscreen      force the full-screen narration look
-##   @ box             force the bottom dialogue box
-##   @ center          centre the text
-##   @ right           right-align the text
-##   @ small           smaller text
-##   @ large           larger text
-##   @ input_name      open the name-entry panel
-##   @ sfx <name>      play car/vn/sfx/<name>.ogg|wav|mp3 (one-shot)
-##   @ music <name>    swap the looping music; "@ music stop" stops it
-##   @ portrait <who>  show a portrait (not wired to art yet)
-##   @ sfx <name>      one-shot sound (not wired yet)
-##   @ call <scene>    hand off to another scene (not wired yet)
+## DIRECTIVES - two kinds:
 ##
-## HOW A LINE IS CLASSIFIED: if the text before the first ":" is a single word
-## (no spaces), it's a speaker; otherwise the whole line is narration. So
-## "Chip: hi" is dialogue, but "Our contract: split 50/50" is narration.
+##   MODE (STICKY) - sets a state that lasts until changed. Add "off" to undo.
+##     @ fullscreen / @ fullscreen off
+##     @ box                     (shorthand for @ fullscreen off)
+##     @ center / @ center off
+##     @ right  / @ right off
+##     @ small  / @ small off
+##     @ large  / @ large off
+##
+##   EVENT (ONE-SHOT) - happens on the line it is attached to, then gone.
+##     @ stage <text>            stage direction -> italic line above
+##     @ sfx <name>              play vn/sfx/<name> (one-shot)
+##     @ music <name>            swap looping music; "@ music stop"
+##     @ shake                   brief shake of the text area
+##     @ input_name              open the name-entry panel
+##     @ call <scene>            hand off to another scene (not wired yet)
+##
+## A line is dialogue ONLY if the text before the first ":" is one word.
+## So "Chip: hi" is dialogue, but "Our contract: split 50/50" is narration.
 ##
 ## "Player:" resolves to Game.display_name() - "Blockhead" until the player
 ## enters a name, then that name. "{player}" in text expands the same way.
@@ -35,6 +37,7 @@ extends Control
 const CHARS_PER_SEC := 45.0
 const SFX_DIR := "res://vn/sfx/"
 const SFX_EXTS := ["ogg", "wav", "mp3"]
+const MODE_VERBS := ["fullscreen", "box", "center", "right", "small", "large"]
 
 ## Leave blank to play through Game.chapters in order; set a path to test one file.
 @export var chapter_file := ""
@@ -83,7 +86,9 @@ func _parse(text: String) -> void:
 	var blocks: Array = []
 	var labels := {}
 	var pending_label := ""
-	var pending_staging: Array[String] = []
+	var pending_staging: Array[String] = []   # EVENT directives only
+	var pending_mode := false                 # did a MODE directive just appear?
+	var modes := {"fullscreen": false, "align": "left", "size": "normal"}
 	var cur = null
 	var last_choice = null
 
@@ -98,7 +103,15 @@ func _parse(text: String) -> void:
 			continue
 
 		if line.begins_with("@"):
-			pending_staging.append(line.substr(1).strip_edges())
+			var d := line.substr(1).strip_edges()
+			var dp := d.split(" ", true, 1)
+			var verb := str(dp[0])
+			var arg := str(dp[1]).strip_edges() if dp.size() > 1 else ""
+			if MODE_VERBS.has(verb):
+				_apply_mode(modes, verb, arg)
+				pending_mode = true
+			else:
+				pending_staging.append(d)
 			continue
 
 		if line.begins_with("?"):
@@ -137,9 +150,10 @@ func _parse(text: String) -> void:
 					body = line.substr(i + 1).strip_edges()
 			var is_narr: bool = spk == "" or spk == "Narrator" or spk == "~"
 
-			# Merge consecutive narration into a single full-screen block.
-			# A staged line stands alone so its directives don't leak.
-			if is_narr and pending_staging.is_empty() and not blocks.is_empty():
+			# Merge consecutive narration into one block. Only a clean,
+			# directive-free narration line merges, so a mode change or an
+			# event starts a fresh block.
+			if is_narr and pending_staging.is_empty() and not pending_mode and not blocks.is_empty():
 				var prev: Dictionary = blocks[blocks.size() - 1]
 				if prev["narration"] and prev["staging"].is_empty() and prev["choices"].is_empty() and prev["next_label"] == "" and not prev["force_end"]:
 					prev["text"] = str(prev["text"]) + "\n" + body
@@ -152,6 +166,7 @@ func _parse(text: String) -> void:
 				"speaker": spk,
 				"text": body,
 				"narration": is_narr,
+				"modes": modes.duplicate(),
 				"effects": {},
 				"choices": [],
 				"next_label": "",
@@ -160,6 +175,7 @@ func _parse(text: String) -> void:
 			}
 			pending_label = ""
 			pending_staging.clear()
+			pending_mode = false
 			last_choice = null
 			blocks.append(cur)
 
@@ -180,6 +196,7 @@ func _parse(text: String) -> void:
 			"speaker": b["speaker"],
 			"text": b["text"],
 			"narration": b["narration"],
+			"modes": b["modes"],
 			"effects": b["effects"],
 			"staging": b["staging"],
 			"next": _resolve(str(b["next_label"]), bool(b["force_end"]), i, blocks, labels),
@@ -194,6 +211,29 @@ func _parse(text: String) -> void:
 		nodes[str(i)] = node
 
 	_nodes = {"start": "0", "nodes": nodes}
+
+
+func _apply_mode(modes: Dictionary, verb: String, arg: String) -> void:
+	var on := arg != "off"
+	match verb:
+		"fullscreen":
+			modes["fullscreen"] = on
+		"box":
+			modes["fullscreen"] = false
+		"center":
+			if on:
+				modes["align"] = "center"
+			elif modes["align"] == "center":
+				modes["align"] = "left"
+		"right":
+			if on:
+				modes["align"] = "right"
+			elif modes["align"] == "right":
+				modes["align"] = "left"
+		"small":
+			modes["size"] = "small" if on else "normal"
+		"large":
+			modes["size"] = "large" if on else "normal"
 
 
 func _resolve(label: String, force_end: bool, index: int, blocks: Array, labels: Dictionary) -> String:
@@ -220,17 +260,21 @@ func _goto(id: String) -> void:
 	var node: Dictionary = _nodes["nodes"][id]
 	_apply_effects(node.get("effects", {}))
 	_handle_audio(node)
+	if _has_staging(node, "shake"):
+		_shake()
 
 	_clear_choices()
 	hint.text = ""
 
-	var fullscreen: bool = bool(node.get("narration", false))
-	if _has_staging(node, "fullscreen"):
-		fullscreen = true
-	if _has_staging(node, "box"):
-		fullscreen = false
+	var modes: Dictionary = node.get("modes", {})
+	var fullscreen: bool = bool(node.get("narration", false)) or bool(modes.get("fullscreen", false))
 
 	var body := _compose_text(node)
+	if fullscreen and not bool(node.get("narration", false)):
+		var spk := _speaker_name(node)
+		if spk != "":
+			body = "[b]%s[/b]\n%s" % [spk, body]
+
 	if fullscreen:
 		box.visible = false
 		portrait.visible = false
@@ -262,6 +306,19 @@ func _render_narration() -> void:
 	narration_label.text = "\n".join(out)
 
 
+## EVENT: a brief shake of the visible text areas.
+func _shake() -> void:
+	var targets: Array[Control] = [box, narration_label]
+	for n in targets:
+		if not n.visible:
+			continue
+		var base: Vector2 = n.position
+		var tw := create_tween()
+		for i in 5:
+			tw.tween_property(n, "position", base + Vector2(randf_range(-9.0, 9.0), randf_range(-7.0, 7.0)), 0.03)
+		tw.tween_property(n, "position", base, 0.06)
+
+
 func _speaker_name(node: Dictionary) -> String:
 	var spk := str(node.get("speaker", ""))
 	if spk == "Player" or spk == "{player}":
@@ -269,8 +326,8 @@ func _speaker_name(node: Dictionary) -> String:
 	return spk
 
 
-## Displayed text: staging becomes an italic block on top, and directives add
-## alignment / size via BBCode.
+## Displayed text: "@ stage" directions become an italic block on top, and the
+## node's sticky MODES add alignment / size via BBCode.
 func _compose_text(node: Dictionary) -> String:
 	var shown: Array[String] = []
 	for d in node.get("staging", []):
@@ -280,14 +337,18 @@ func _compose_text(node: Dictionary) -> String:
 	var t := str(node.get("text", "")).replace("{player}", Game.display_name())
 	if not shown.is_empty():
 		t = "[i]%s[/i]\n%s" % ["\n".join(shown), t]
-	if _has_staging(node, "center"):
-		t = "[center]%s[/center]" % t
-	elif _has_staging(node, "right"):
-		t = "[right]%s[/right]" % t
-	if _has_staging(node, "small"):
-		t = "[font_size=22]%s[/font_size]" % t
-	elif _has_staging(node, "large"):
-		t = "[font_size=40]%s[/font_size]" % t
+
+	var modes: Dictionary = node.get("modes", {})
+	match str(modes.get("align", "left")):
+		"center":
+			t = "[center]%s[/center]" % t
+		"right":
+			t = "[right]%s[/right]" % t
+	match str(modes.get("size", "normal")):
+		"small":
+			t = "[font_size=22]%s[/font_size]" % t
+		"large":
+			t = "[font_size=40]%s[/font_size]" % t
 	return t
 
 

@@ -11,17 +11,14 @@
 #   == label        a named beat to jump to
 #   # comment       ignored
 #
-# DIRECTIVES  (write on their own line; each applies to the NEXT line)
-#   @ stage <text>  stage direction -> italic line above the dialogue
-#   @ fullscreen    force the full-screen narration look
-#   @ box           force the bottom dialogue box
-#   @ center        centre the text
-#   @ right         right-align the text
-#   @ small         smaller text
-#   @ large         larger text
-#   @ input_name    open the name-entry panel
-#   @ sfx <name>    play vn/sfx/<name>.ogg|wav|mp3 (one-shot)
-#   @ music <name>  swap looping music; "@ music stop" to stop
+# DIRECTIVES - two kinds
+#   MODE (sticky; lasts until changed - add "off" to undo):
+#     @ fullscreen / @ fullscreen off        @ box  (= fullscreen off)
+#     @ center / @ center off                @ right / @ right off
+#     @ small / @ small off                  @ large / @ large off
+#     @ music <name>  (loops; @ music stop)
+#   EVENT (one-shot; happens on this line only):
+#     @ stage <text>   @ sfx <name>   @ shake   @ input_name
 #
 # A line is dialogue ONLY if the text before the first ":" is one word.
 # So "Chip: hi" is dialogue, but "Our contract: split 50/50" is narration.
@@ -33,6 +30,8 @@
 @ large
 WAR IDOLS
 
+@ center off
+@ large off
 It doesn't matter how good or bad things get - even beneath the all-seeing red eye of Jupiter, everyone's gotta make a buck.
 The boom times, when my pops moved out to the Jovian moons as a volunteer for the Giant Leap Pioneer Project, are long over.
 The bubble dreams of our fathers popped. The lost children of that era lived as gig-economy freeters, junkies, and burnouts.
