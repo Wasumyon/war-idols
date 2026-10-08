@@ -4,7 +4,11 @@ extends Node3D
 ##   W / S            boost / slow
 ##   SPACE            jump         (0.5s cooldown between jumps)
 ##   CTRL             duck / cover (avoids filmer-targeting attacks; suspends filming)
-##   SHIFT            dash         (forward burst, super armour, smashes obstacles)
+##   SHIFT            dash         (bubble + speedlines; super armour; smashes obstacles)
+##
+## NOTE: Shift and Ctrl are read from the physical key, not the InputMap.
+## Modifier keys bound as actions frequently fail to match, because the event
+## arrives with its own modifier flag set (shift_pressed / ctrl_pressed).
 
 @export var lane_count := 5
 @export var lane_width := 4.0
@@ -17,8 +21,8 @@ extends Node3D
 @export var gravity := 22.0
 @export var jump_cooldown := 0.5
 
-@export var dash_speed := 68.0
-@export var dash_time := 0.45
+@export var dash_speed := 92.0
+@export var dash_time := 0.55
 @export var dash_cooldown := 4.5
 
 @export var stand_height := 1.45
@@ -37,32 +41,65 @@ var _grounded := true
 var _jump_cd := 0.0
 var _dash_cd := 0.0
 var _dash_t := 0.0
+var _shift_prev := false
+var _bubble: MeshInstance3D
+var _lines: Node3D
 
 @onready var streamer: MeshInstance3D = $Streamer
 
 
 func _ready() -> void:
 	add_to_group("runner")
-	_ensure_actions()
+	_ensure_jump_action()
+	_build_dash_fx()
 	lane = lane_count / 2
 	position.x = lane_x(lane)
 	$Hitbox.area_entered.connect(_on_area_entered)
 
 
-func _ensure_actions() -> void:
-	if not InputMap.has_action("jump"):
-		_bind("jump", KEY_SPACE)
-	if not InputMap.has_action("duck"):
-		_bind("duck", KEY_CTRL)
-	if not InputMap.has_action("dash"):
-		_bind("dash", KEY_SHIFT)
-
-
-func _bind(action: String, key: int) -> void:
-	InputMap.add_action(action)
+func _ensure_jump_action() -> void:
+	if InputMap.has_action("jump"):
+		return
+	InputMap.add_action("jump")
 	var ev := InputEventKey.new()
-	ev.physical_keycode = key
-	InputMap.action_add_event(action, ev)
+	ev.physical_keycode = KEY_SPACE
+	InputMap.action_add_event("jump", ev)
+
+
+## A translucent bubble around the car plus radial speedlines, shown on dash.
+func _build_dash_fx() -> void:
+	_bubble = MeshInstance3D.new()
+	var sm := SphereMesh.new()
+	sm.radius = 2.6
+	sm.height = 5.2
+	_bubble.mesh = sm
+	var bm := StandardMaterial3D.new()
+	bm.albedo_color = Color(0.2, 0.9, 1.0, 0.22)
+	bm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	bm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	bm.emission_enabled = true
+	bm.emission = Color(0.1, 0.6, 0.8)
+	_bubble.material_override = bm
+	_bubble.position = Vector3(0, 0.7, 0)
+	_bubble.visible = false
+	add_child(_bubble)
+
+	_lines = Node3D.new()
+	for i in 8:
+		var m := MeshInstance3D.new()
+		var box := BoxMesh.new()
+		box.size = Vector3(0.06, 0.06, 7.0)
+		m.mesh = box
+		var lm := StandardMaterial3D.new()
+		lm.albedo_color = Color(1, 1, 1, 0.55)
+		lm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		lm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		m.material_override = lm
+		var ang := float(i) / 8.0 * TAU
+		m.position = Vector3(cos(ang) * 2.3, 0.8 + sin(ang) * 1.7, 0.0)
+		_lines.add_child(m)
+	_lines.visible = false
+	add_child(_lines)
 
 
 func lane_x(index: int) -> float:
@@ -82,11 +119,13 @@ func _physics_process(delta: float) -> void:
 		lane = min(lane_count - 1, lane + 1)
 	position.x = lerp(position.x, lane_x(lane), clamp(strafe_rate * delta, 0.0, 1.0))
 
-	# --- dash ---
-	if Input.is_action_just_pressed("dash") and _dash_cd <= 0.0:
+	# --- dash (physical key: modifier actions are unreliable) ---
+	var shift_now := Input.is_physical_key_pressed(KEY_SHIFT)
+	if shift_now and not _shift_prev and _dash_cd <= 0.0:
 		dashing = true
 		_dash_t = dash_time
 		_dash_cd = dash_cooldown
+	_shift_prev = shift_now
 	if dashing:
 		_dash_t -= delta
 		if _dash_t <= 0.0:
@@ -100,7 +139,7 @@ func _physics_process(delta: float) -> void:
 		target_speed = slow_speed
 	if dashing:
 		target_speed = dash_speed
-	speed = lerp(speed, target_speed, 5.0 * delta)
+	speed = lerp(speed, target_speed, (14.0 if dashing else 5.0) * delta)
 	position.z -= speed * delta
 
 	# --- jump (with cooldown) ---
@@ -116,23 +155,35 @@ func _physics_process(delta: float) -> void:
 		_grounded = true
 	position.y = _height
 
-	# --- duck (streamer takes cover) ---
-	ducking = Input.is_action_pressed("duck")
+	# --- duck (physical key) ---
+	ducking = Input.is_physical_key_pressed(KEY_CTRL)
 	var target_y: float = duck_height if ducking else stand_height
 	streamer.position.y = lerp(streamer.position.y, target_y, clamp(duck_rate * delta, 0.0, 1.0))
+
+	# --- dash effects + smashing ---
+	_bubble.visible = dashing
+	_lines.visible = dashing
+	if dashing:
+		_bubble.scale = Vector3.ONE * (1.0 + sin(Time.get_ticks_msec() * 0.02) * 0.06)
+		_smash()
+
+
+## Destroy any ground obstacle currently overlapping the car while dashing.
+func _smash() -> void:
+	for a in $Hitbox.get_overlapping_areas():
+		if a.is_in_group("obstacle"):
+			a.queue_free()
 
 
 func _on_area_entered(area: Area3D) -> void:
 	if not area.is_in_group("damaging"):
 		return
 
-	# Dash smashes ground obstacles and takes no damage.
 	if dashing:
 		if area.is_in_group("obstacle"):
 			area.queue_free()
 		return
 
-	# Filmer-targeting attacks: covered = missed.
 	if area.is_in_group("filmer"):
 		if ducking:
 			return
