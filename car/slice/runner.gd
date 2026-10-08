@@ -23,7 +23,7 @@ extends Node3D
 
 @export var dash_speed := 92.0
 @export var dash_time := 0.55
-@export var dash_cooldown := 4.5
+@export var dash_cooldown := 6.5
 
 @export var stand_height := 1.45
 @export var duck_height := 0.9
