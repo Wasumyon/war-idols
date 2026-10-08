@@ -59,6 +59,7 @@ var _lmb_prev := false
 @onready var reticle = $HUD/Reticle
 @onready var vignette: ColorRect = $HUD/Vignette
 @onready var points_label: Label = $HUD/Points
+@onready var money_label: Label = $HUD/Money
 @onready var shields_label: Label = $HUD/Shields
 @onready var speed_label: Label = $HUD/Speed
 @onready var time_label: Label = $HUD/Time
@@ -179,8 +180,9 @@ func _flash_shields() -> void:
 
 func _update_hud(mult: float) -> void:
 	points_label.text = "Followers: %d" % int(followers)
+	money_label.text = "$%d" % int(money)
 	shields_label.text = "Shields: %d" % shields
-	speed_label.text = "$%d   %d m/s   x%.1f" % [int(money), int(runner.speed), mult]
+	speed_label.text = "%d m/s   x%.1f" % [int(runner.speed), mult]
 	var t := int(ceil(run_timer.time_left))
 	time_label.text = "%02d:%02d" % [int(t / 60.0), t % 60]
 
@@ -191,8 +193,9 @@ func _end_run() -> void:
 	runner.alive = false
 	reticle.set_state(Vector2(-1000, -1000), 0, 1.0, RETICLE_W)
 	vignette.material.set_shader_parameter("intensity", VIG_BASE)
-	points_label.text = "RUN OVER  -  press R"
-	shields_label.text = "Followers: %d   $%d" % [int(followers), int(money)]
+	points_label.text = "Followers: %d" % int(followers)
+	money_label.text = "$%d" % int(money)
+	shields_label.text = "RUN OVER  -  press R"
 	speed_label.text = ""
 	time_label.text = "00:00"
 

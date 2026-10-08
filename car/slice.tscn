@@ -218,7 +218,14 @@ offset_left = 16.0
 offset_top = 12.0
 offset_right = 320.0
 offset_bottom = 40.0
-text = "Footage: 0"
+text = "Followers: 0"
+
+[node name="Money" type="Label" parent="HUD"]
+offset_left = 16.0
+offset_top = 44.0
+offset_right = 320.0
+offset_bottom = 72.0
+text = "$0"
 
 [node name="Shields" type="Label" parent="HUD"]
 anchors_preset = 1
@@ -243,16 +250,20 @@ text = "01:30"
 horizontal_alignment = 1
 
 [node name="Speed" type="Label" parent="HUD"]
-anchors_preset = 2
+anchors_preset = 3
+anchor_left = 1.0
 anchor_top = 1.0
+anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 16.0
+offset_left = -280.0
 offset_top = -40.0
-offset_right = 220.0
+offset_right = -16.0
 offset_bottom = -12.0
 text = "26 m/s"
+horizontal_alignment = 2
 
 [node name="Cooldowns" type="Control" parent="HUD"]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -262,6 +273,7 @@ mouse_filter = 2
 script = ExtResource("7_cooldowns")
 
 [node name="SnapToast" type="Label" parent="HUD"]
+modulate = Color(1, 1, 1, 0)
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
@@ -269,6 +281,5 @@ offset_left = -240.0
 offset_top = 56.0
 offset_right = 240.0
 offset_bottom = 92.0
-modulate = Color(1, 1, 1, 0)
 text = "GOOD SNAP - LEFT CLICK"
 horizontal_alignment = 1

@@ -23,8 +23,8 @@ class_name LaneSpawner
 @export var flat_chance := 0.65
 
 # --- air layer ---
-@export var air_interval := 2.4
-@export var air_spawn_ahead := 130.0
+@export var air_interval := 2.0
+@export var air_spawn_ahead := 200.0
 @export var hover_chance := 0.4
 @export var max_hover := 2
 

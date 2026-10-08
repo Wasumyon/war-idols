@@ -31,7 +31,7 @@ enum Mode { CROSS, HOVER }
 @export var lane_count: int = 5
 @export var lane_width: float = 4.0
 @export var max_active_pellets: int = 14
-@export var min_range: float = 22.0   # deadzone: holds fire when this close
+@export var min_range: float = 16.0   # deadzone: holds fire when this close
 
 var _runner: Node3D
 var _cool := 0.0

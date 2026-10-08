@@ -5,8 +5,8 @@ extends Control
 
 const READY := Color(0.25, 0.9, 1.0)
 const COOL := Color(0.25, 0.3, 0.35)
-const RADIUS := 36.0
-const SPACING := 116.0
+const RADIUS := 28.0
+const SPACING := 92.0
 
 var _snap := {"rem": 0.0, "total": 5.0}
 var _dash := {"rem": 0.0, "total": 4.5}
@@ -24,9 +24,9 @@ func _process(_delta: float) -> void:
 
 
 func _draw() -> void:
-	var y := size.y - 76.0
-	_draw_bubble(Vector2(76.0, y), _snap, "SNAP", "LMB")
-	_draw_bubble(Vector2(76.0 + SPACING, y), _dash, "DASH", "SHIFT")
+	var y := size.y - 62.0
+	_draw_bubble(Vector2(62.0, y), _snap, "SNAP", "LMB")
+	_draw_bubble(Vector2(62.0 + SPACING, y), _dash, "DASH", "SHIFT")
 
 
 func _draw_bubble(c: Vector2, item: Dictionary, label: String, key: String) -> void:
