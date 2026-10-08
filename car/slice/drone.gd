@@ -32,6 +32,9 @@ enum Mode { CROSS, HOVER }
 @export var lane_width: float = 4.0
 @export var max_active_pellets: int = 14
 @export var min_range: float = 16.0   # deadzone: holds fire when this close
+@export var beam_attack: bool = false # charge (3 flashes) then fire a beam
+@export var charge_time: float = 1.5
+@export var beam_width: float = 8.0
 
 var _runner: Node3D
 var _cool := 0.0
@@ -47,6 +50,11 @@ var _base_y := 0.0
 var _have_prev := false
 var _prev_pos := Vector3.ZERO
 var _runner_vel := Vector3.ZERO
+var _charging := false
+var _charge_t := 0.0
+var _mat: StandardMaterial3D
+var _base_emission := Color(0.35, 0.08, 0.5)
+var _base_albedo := Color(0.75, 0.25, 0.9)
 
 
 func _ready() -> void:
@@ -73,6 +81,7 @@ func _build() -> void:
 	mat.emission_enabled = true
 	mat.emission = Color(0.35, 0.08, 0.5)
 	mesh.material_override = mat
+	_mat = mat
 	add_child(mesh)
 
 	var cs := CollisionShape3D.new()
@@ -133,6 +142,15 @@ func _hover(delta: float) -> void:
 func _tick_fire(delta: float) -> void:
 	if mode == Mode.HOVER and _leaving:
 		return
+	if _charging:
+		_charge_t += delta
+		# Three white flashes across charge_time, then fire.
+		_set_flash(int(_charge_t / 0.25) % 2 == 0)
+		if _charge_t >= charge_time:
+			_charging = false
+			_set_flash(false)
+			_fire_beam()
+		return
 	if _burst_left > 0:
 		_burst_timer -= delta
 		if _burst_timer <= 0.0:
@@ -143,8 +161,29 @@ func _tick_fire(delta: float) -> void:
 		_cool -= delta
 		if _cool <= 0.0:
 			_cool = fire_interval
-			_burst_left = burst_count
-			_burst_timer = 0.0
+			if beam_attack:
+				_charging = true
+				_charge_t = 0.0
+			else:
+				_burst_left = burst_count
+				_burst_timer = 0.0
+
+
+func _set_flash(on: bool) -> void:
+	if _mat == null:
+		return
+	_mat.emission = Color(1, 1, 1) if on else _base_emission
+	_mat.albedo_color = Color(1, 1, 1) if on else _base_albedo
+
+
+func _fire_beam() -> void:
+	if _runner != null and global_position.distance_to(_runner.global_position) < min_range:
+		return   # deadzone: too close to fire
+	var l := Laser.new()
+	l.width = beam_width
+	l.speed = projectile_speed * 1.4
+	get_parent().add_child(l)
+	l.global_position = Vector3(global_position.x, 1.62, global_position.z)
 
 
 func _fire() -> void:

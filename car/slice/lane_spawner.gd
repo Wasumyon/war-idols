@@ -27,6 +27,7 @@ class_name LaneSpawner
 @export var air_spawn_ahead := 200.0
 @export var hover_chance := 0.4
 @export var max_hover := 2
+@export var beam_drone_chance := 0.4   # cross drones that fire a charged beam
 
 # --- side battle clusters (far outside the lane corridor) ---
 @export var battle_interval := 5.5
@@ -153,6 +154,7 @@ func _spawn_air() -> void:
 		dc.tier = 3
 		dc.value = 2.8
 		dc.lateral_speed = randf_range(18.0, 28.0) * -side
+		dc.beam_attack = randf() < beam_drone_chance
 		add_child(dc)
 		dc.global_position = Vector3(side * 26.0, randf_range(6.0, 11.0), z)
 

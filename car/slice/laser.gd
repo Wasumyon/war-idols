@@ -5,6 +5,7 @@ class_name Laser
 ## hit, and ducking drops them below the beam. Duck to survive.
 
 @export var speed := 42.0
+@export var width := 28.0
 
 var _runner: Node3D
 
@@ -19,7 +20,7 @@ func _ready() -> void:
 func _build() -> void:
 	var mesh := MeshInstance3D.new()
 	var box := BoxMesh.new()
-	box.size = Vector3(28.0, 0.35, 1.4)
+	box.size = Vector3(width, 0.35, 1.4)
 	mesh.mesh = box
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = Color(0.25, 1.0, 0.55)
@@ -30,7 +31,7 @@ func _build() -> void:
 
 	var cs := CollisionShape3D.new()
 	var sh := BoxShape3D.new()
-	sh.size = Vector3(28.0, 0.5, 1.6)
+	sh.size = Vector3(width, 0.5, 1.6)
 	cs.shape = sh
 	add_child(cs)
 
