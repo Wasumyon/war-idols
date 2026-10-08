@@ -14,6 +14,7 @@ class_name FilmTarget
 func _ready() -> void:
 	add_to_group("interest")
 	add_to_group("damaging")
+	add_to_group("obstacle")
 	if get_child_count() == 0:
 		_build()
 

@@ -31,6 +31,7 @@ enum Mode { CROSS, HOVER }
 @export var lane_count: int = 5
 @export var lane_width: float = 4.0
 @export var max_active_pellets: int = 14
+@export var min_range: float = 22.0   # deadzone: holds fire when this close
 
 var _runner: Node3D
 var _cool := 0.0
@@ -149,6 +150,8 @@ func _tick_fire(delta: float) -> void:
 func _fire() -> void:
 	if get_tree().get_nodes_in_group("hazard").size() >= max_active_pellets:
 		return
+	if _runner != null and global_position.distance_to(_runner.global_position) < min_range:
+		return   # deadzone: too close to fire
 	var h := Hazard.new()
 	get_parent().add_child(h)
 	h.velocity = Vector3.ZERO

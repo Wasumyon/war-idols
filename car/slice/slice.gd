@@ -1,52 +1,51 @@
 extends Node3D
 ## ============================================================================
-## VERTICAL SLICE - STEP 3: tiers, proximity multiplier, flying enemy
+## VERTICAL SLICE
 ## ============================================================================
 ##
 ## CONTROLS
-##   A / D (or arrows)  strafe one lane
-##   W boost / S slow
-##   mouse              aim the reticle   (filming is PASSIVE: just stay on it)
-##   R (after end)      restart
+##   A / D            strafe            W / S   boost / slow
+##   SPACE            jump (cooldown)
+##   CTRL             duck / cover (avoids filmer attacks; suspends filming)
+##   SHIFT            dash
+##   RIGHT MOUSE      zoom (slower, tighter viewfinder)
+##   mouse            aim the viewfinder
+##   R                restart (after the run ends)
 ##
-## FILMING
-##   Keep the reticle on a "point of interest" and points accrue automatically.
-##   Reticle COLOR = subject tier. Reticle SIZE = proximity multiplier
-##   (closer subject = more points).
-##
-## THE OBJECTS
-##   FilmTarget  - red ground block. tier 1 (yellow). Film or crash into it.
-##   Drone       - purple flyer, OFF the lane grid. tier 2 (orange).
-##                 Fires projectiles down a lane OR aimed at you.
-##   Hazard      - yellow projectile. Damages on contact; not filmable.
-## ----------------------------------------------------------------------------
-
+## SCORING
+##   Keep the viewfinder on a point of interest: FOLLOWERS accrue. DONATIONS
+##   then trickle in at a rate that scales with your follower count.
+##   Reticle colour = subject tier; the tag above = proximity multiplier.
 
 const DURATION := 90.0
 const START_SHIELDS := 3
-const PTS_PER_SEC := 10.0
-const RAY_LENGTH := 500.0
+const FOLLOW_PER_SEC := 10.0
+const DONATION_RATE := 0.004   # money/sec per follower
 const IFRAMES := 0.8
 
-# Proximity multiplier: at NEAR_DIST or closer you get MAX_MULT; at FAR_DIST, 1.0.
 const NEAR_DIST := 12.0
 const FAR_DIST := 140.0
-const MAX_MULT := 3.0
-const CAPTURE_RADIUS := 28.0   # pixel tolerance around the cursor
+const MAX_MULT := 4.0
 
-# Vignette: soft base, closes in (smoothed) when you are on a subject.
+const RETICLE_W := 130.0
+const RETICLE_W_ZOOM := 84.0
+const BASE_FOV := 78.0
+const ZOOM_FOV := 46.0
+const RETICLE_RATE_ZOOM := 7.0
+
 const VIG_BASE := 0.22
 const VIG_LOCK := 0.60
 const VIG_RATE := 3.5
 
-
-var points := 0.0
+var followers := 0.0
+var money := 0.0
 var shields := START_SHIELDS
 var footage_by_type := {}
 var run_active := true
 var _iframe := 0.0
 var _vig := VIG_BASE
-
+var _reticle_pos := Vector2.ZERO
+var _zoom := false
 
 @onready var runner = $Runner
 @onready var cam: Camera3D = $Runner/Camera3D
@@ -72,7 +71,19 @@ func _physics_process(delta: float) -> void:
 		return
 	_iframe = max(0.0, _iframe - delta)
 
-	# --- passive filming ----------------------------------------------------
+	# --- zoom (right mouse) ---
+	_zoom = Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT)
+	var target_fov: float = ZOOM_FOV if _zoom else BASE_FOV
+	cam.fov = lerp(cam.fov, target_fov, clamp(6.0 * delta, 0.0, 1.0))
+
+	# --- reticle follows the cursor; lags (slower) when zoomed ---
+	var mouse := get_viewport().get_mouse_position()
+	if _zoom:
+		_reticle_pos = _reticle_pos.lerp(mouse, clamp(RETICLE_RATE_ZOOM * delta, 0.0, 1.0))
+	else:
+		_reticle_pos = mouse
+
+	# --- passive filming ---
 	var target = _film_target()
 	if runner.ducking:
 		target = null   # ducking suspends filming
@@ -81,50 +92,52 @@ func _physics_process(delta: float) -> void:
 	if target != null:
 		tier = int(target.tier)
 		mult = _proximity_mult(target)
-		var gain: float = PTS_PER_SEC * float(target.value) * mult * delta
-		points += gain
-		footage_by_type[target.type_name] = float(footage_by_type.get(target.type_name, 0.0)) + gain
+		followers += FOLLOW_PER_SEC * float(target.value) * mult * delta
+		footage_by_type[target.type_name] = float(footage_by_type.get(target.type_name, 0.0)) + 1.0
+		# Donations are stochastic but driven by follower count.
+		money += followers * DONATION_RATE * delta * randf_range(0.5, 1.5)
+		footage_by_type["_donations"] = float(footage_by_type.get("_donations", 0.0)) + 1.0
 
-	reticle.set_state(tier, mult)
-	# Vignette eases toward its target instead of snapping.
+	var width: float = RETICLE_W_ZOOM if _zoom else RETICLE_W
+	reticle.set_state(_reticle_pos, tier, mult, width)
+
 	var vig_target: float = VIG_LOCK if tier > 0 else VIG_BASE
 	_vig = lerp(_vig, vig_target, clamp(VIG_RATE * delta, 0.0, 1.0))
 	vignette.material.set_shader_parameter("intensity", _vig)
+
 	_update_hud(mult)
+
+
+func _reticle_half() -> Vector2:
+	var w: float = RETICLE_W_ZOOM if _zoom else RETICLE_W
+	return Vector2(w * 0.5, (w / (16.0 / 9.0)) * 0.5)
+
+
+## Returns the point of interest whose screen position falls inside the
+## viewfinder rectangle, or null.
+func _film_target():
+	var half := _reticle_half()
+	var best = null
+	var best_d := INF
+	for n in get_tree().get_nodes_in_group("interest"):
+		if not (n is Area3D) or not n.visible:
+			continue
+		var gp: Vector3 = n.global_position
+		if cam.is_position_behind(gp):
+			continue
+		var sp := cam.unproject_position(gp)
+		if abs(sp.x - _reticle_pos.x) <= half.x and abs(sp.y - _reticle_pos.y) <= half.y:
+			var d := sp.distance_to(_reticle_pos)
+			if d < best_d:
+				best_d = d
+				best = n
+	return best
 
 
 func _proximity_mult(target) -> float:
 	var d := cam.global_position.distance_to(target.global_position)
 	var t: float = clamp((FAR_DIST - d) / (FAR_DIST - NEAR_DIST), 0.0, 1.0)
 	return 1.0 + (MAX_MULT - 1.0) * t
-
-
-## Casts rays from the camera through the mouse (centre + a ring of offsets) so
-## the reticle has a generous capture area. Returns the point of interest
-## under the cursor, or null.
-func _film_target():
-	var mouse := get_viewport().get_mouse_position()
-	var r := CAPTURE_RADIUS
-	var offsets := [
-		Vector2.ZERO,
-		Vector2(r, 0), Vector2(-r, 0), Vector2(0, r), Vector2(0, -r),
-		Vector2(r, r) * 0.7, Vector2(-r, r) * 0.7,
-		Vector2(r, -r) * 0.7, Vector2(-r, -r) * 0.7,
-	]
-	for off in offsets:
-		var p: Vector2 = mouse + off
-		var from := cam.project_ray_origin(p)
-		var to := from + cam.project_ray_normal(p) * RAY_LENGTH
-		var query := PhysicsRayQueryParameters3D.create(from, to)
-		query.collide_with_areas = true
-		query.collide_with_bodies = false
-		var hit := get_world_3d().direct_space_state.intersect_ray(query)
-		if hit.is_empty():
-			continue
-		var collider = hit.get("collider")
-		if collider != null and collider.is_in_group("interest"):
-			return collider
-	return null
 
 
 func on_player_hit() -> void:
@@ -144,9 +157,9 @@ func _flash_shields() -> void:
 
 
 func _update_hud(mult: float) -> void:
-	points_label.text = "Footage: %d" % int(points)
+	points_label.text = "Followers: %d" % int(followers)
 	shields_label.text = "Shields: %d" % shields
-	speed_label.text = "%d m/s   x%.1f" % [int(runner.speed), mult]
+	speed_label.text = "$%d   %d m/s   x%.1f" % [int(money), int(runner.speed), mult]
 	var t := int(ceil(run_timer.time_left))
 	time_label.text = "%02d:%02d" % [int(t / 60.0), t % 60]
 
@@ -155,10 +168,10 @@ func _end_run() -> void:
 	run_active = false
 	run_timer.stop()
 	runner.alive = false
-	reticle.set_state(0, 1.0)
-	reticle.visible = false
+	reticle.set_state(Vector2(-1000, -1000), 0, 1.0, RETICLE_W)
+	vignette.material.set_shader_parameter("intensity", VIG_BASE)
 	points_label.text = "RUN OVER  -  press R"
-	shields_label.text = "Footage: %d" % int(points)
+	shields_label.text = "Followers: %d   $%d" % [int(followers), int(money)]
 	speed_label.text = ""
 	time_label.text = "00:00"
 
