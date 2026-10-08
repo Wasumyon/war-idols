@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://c2gyvqy7rpg6k"]
+[gd_scene load_steps=28 format=3 uid="uid://c2gyvqy7rpg6k"]
 
 [ext_resource type="Script" uid="uid://dhcujkhfhdqtd" path="res://slice/slice.gd" id="1_slice"]
 [ext_resource type="Script" uid="uid://bclthao11g0l8" path="res://slice/runner.gd" id="2_runner"]
@@ -81,6 +81,9 @@ height = 0.7
 
 [sub_resource type="BoxShape3D" id="HitboxShape_1"]
 size = Vector3(2.4, 1.6, 4.5)
+
+[sub_resource type="SphereShape3D" id="StreamHitShape_1"]
+radius = 0.45
 
 [sub_resource type="Shader" id="VigShader_1"]
 code = "shader_type canvas_item;
@@ -187,6 +190,12 @@ fov = 78.0
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Runner/Hitbox"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("HitboxShape_1")
+
+[node name="StreamHit" type="Area3D" parent="Runner"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Runner/StreamHit"]
+shape = SubResource("StreamHitShape_1")
 
 [node name="Spawner" type="Node3D" parent="."]
 script = ExtResource("4_spawner")

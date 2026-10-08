@@ -38,6 +38,9 @@ class_name LaneSpawner
 @export var cluster_z_min := 100.0
 @export var cluster_z_max := 150.0
 
+# --- filmer-targeting lasers ---
+@export var laser_interval := 7.0
+
 var lane_weights := [3.0, 2.0, 1.0, 2.0, 3.0]
 
 var _runner: Node3D
@@ -46,6 +49,7 @@ var _started := false
 var _cleanup := 0.0
 var _air_cool := 0.0
 var _battle_cool := 0.0
+var _laser_cool := 0.0
 var _last_emitter_z := 100000.0
 var _last_lane := -1
 
@@ -89,6 +93,12 @@ func _process(delta: float) -> void:
 		_battle_cool = battle_interval * randf_range(0.8, 1.2)
 		if not feature_busy:
 			_spawn_battle()
+
+	# --- filmer-targeting lasers (duck to survive) ---
+	_laser_cool -= delta
+	if _laser_cool <= 0.0:
+		_laser_cool = laser_interval * randf_range(0.8, 1.2)
+		_spawn_laser()
 
 	# --- recycle what the player has passed ---
 	_cleanup -= delta
@@ -145,6 +155,14 @@ func _spawn_air() -> void:
 		dc.lateral_speed = randf_range(18.0, 28.0) * -side
 		add_child(dc)
 		dc.global_position = Vector3(side * 26.0, randf_range(6.0, 11.0), z)
+
+
+## A road-wide beam at streamer height; duck to drop below it.
+func _spawn_laser() -> void:
+	var z := _runner.global_position.z - randf_range(95.0, 130.0)
+	var l := Laser.new()
+	add_child(l)
+	l.global_position = Vector3(0.0, 1.62, z)
 
 
 ## A cluster of battles on one side, grouped so it reads as one engagement.

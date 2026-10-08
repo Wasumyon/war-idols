@@ -55,6 +55,7 @@ func _ready() -> void:
 	lane = lane_count / 2
 	position.x = lane_x(lane)
 	$Hitbox.area_entered.connect(_on_area_entered)
+	$StreamHit.area_entered.connect(_on_stream_hit)
 
 
 func _ensure_jump_action() -> void:
@@ -162,6 +163,9 @@ func _physics_process(delta: float) -> void:
 		or Input.is_mouse_button_pressed(MOUSE_BUTTON_XBUTTON2)
 	var target_y: float = duck_height if ducking else stand_height
 	streamer.position.y = lerp(streamer.position.y, target_y, clamp(duck_rate * delta, 0.0, 1.0))
+	# The streamer's hitbox rides with them: standing = in the beam's path,
+	# ducked = below it.
+	$StreamHit.position.y = streamer.position.y
 
 	# --- dash effects + smashing ---
 	_bubble.visible = dashing
@@ -176,6 +180,16 @@ func _smash() -> void:
 	for a in $Hitbox.get_overlapping_areas():
 		if a.is_in_group("obstacle"):
 			a.queue_free()
+
+
+## Filmer-targeting attacks only connect with the streamer's hitbox. Standing
+## puts them in the beam; ducking drops them below it.
+func _on_stream_hit(area: Area3D) -> void:
+	if not area.is_in_group("filmer"):
+		return
+	if dashing:
+		return   # super armour shrugs this off too
+	get_parent().on_player_hit()
 
 
 func _on_area_entered(area: Area3D) -> void:
