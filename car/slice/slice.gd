@@ -167,6 +167,7 @@ func on_player_hit() -> void:
 		return
 	_iframe = IFRAMES
 	shields -= 1
+	runner.start_invuln(IFRAMES)
 	_flash_shields()
 	if shields <= 0:
 		_end_run()

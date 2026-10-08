@@ -42,10 +42,12 @@ var _jump_cd := 0.0
 var _dash_cd := 0.0
 var _dash_t := 0.0
 var _shift_prev := false
+var _invuln := 0.0
 var _bubble: MeshInstance3D
 var _lines: Node3D
 
 @onready var streamer: MeshInstance3D = $Streamer
+@onready var body: MeshInstance3D = $Body
 
 
 func _ready() -> void:
@@ -105,6 +107,11 @@ func _build_dash_fx() -> void:
 
 func lane_x(index: int) -> float:
 	return (index - (lane_count - 1) / 2.0) * lane_width
+
+
+## Blink the car + streamer for `t` seconds (called on a hit).
+func start_invuln(t: float) -> void:
+	_invuln = t
 
 
 func _physics_process(delta: float) -> void:
@@ -167,6 +174,16 @@ func _physics_process(delta: float) -> void:
 	# ducked = below it.
 	$StreamHit.position.y = streamer.position.y
 
+	# --- invulnerability blink ---
+	if _invuln > 0.0:
+		_invuln -= delta
+		var on: bool = fmod(_invuln, 0.16) < 0.08
+		body.visible = on
+		streamer.visible = on
+	else:
+		body.visible = true
+		streamer.visible = true
+
 	# --- dash effects + smashing ---
 	_bubble.visible = dashing
 	_lines.visible = dashing
@@ -187,6 +204,8 @@ func _smash() -> void:
 func _on_stream_hit(area: Area3D) -> void:
 	if not area.is_in_group("filmer"):
 		return
+	if ducking:
+		return   # covered: the laser cannot touch you
 	if dashing:
 		return   # super armour shrugs this off too
 	get_parent().on_player_hit()
