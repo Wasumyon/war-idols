@@ -6,7 +6,7 @@
 [ext_resource type="Script" uid="uid://byxla2m4wkuct" path="res://slice/lane_spawner.gd" id="4_spawner"]
 [ext_resource type="Script" path="res://slice/backdrop.gd" id="5_backdrop"]
 [ext_resource type="Script" path="res://slice/backdrop_layer.gd" id="6_layer"]
-[ext_resource type="Script" path="res://slice/cooldown_bubbles.gd" id="7_cooldowns"]
+[ext_resource type="Script" uid="uid://bw0tsr24vini5" path="res://slice/cooldown_bubbles.gd" id="7_cooldowns"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
 sky_horizon_color = Color(0.55, 0.53, 0.5, 1)
