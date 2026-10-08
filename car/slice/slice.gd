@@ -31,7 +31,7 @@ const SNAP_COOLDOWN := 5.0
 const SNAP_BURST := 320.0
 const SNAP_MIN_TIER := 2   # orange and above count as a "good snap"
 
-const RETICLE_W := 130.0
+const RETICLE_W := 100.0
 const RETICLE_W_ZOOM := 84.0
 const BASE_FOV := 78.0
 const ZOOM_FOV := 46.0
@@ -201,5 +201,6 @@ func _end_run() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not run_active and event is InputEventKey and event.pressed and event.keycode == KEY_R:
+	# R restarts at any time (alive or after the run ends).
+	if event is InputEventKey and event.pressed and event.keycode == KEY_R:
 		get_tree().reload_current_scene()
