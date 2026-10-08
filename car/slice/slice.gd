@@ -27,6 +27,10 @@ const NEAR_DIST := 12.0
 const FAR_DIST := 140.0
 const MAX_MULT := 4.0
 
+const SNAP_COOLDOWN := 5.0
+const SNAP_BURST := 320.0
+const SNAP_MIN_TIER := 2   # orange and above count as a "good snap"
+
 const RETICLE_W := 130.0
 const RETICLE_W_ZOOM := 84.0
 const BASE_FOV := 78.0
@@ -46,6 +50,8 @@ var _iframe := 0.0
 var _vig := VIG_BASE
 var _reticle_pos := Vector2.ZERO
 var _zoom := false
+var _snap_cd := 0.0
+var _lmb_prev := false
 
 @onready var runner = $Runner
 @onready var cam: Camera3D = $Runner/Camera3D
@@ -56,6 +62,8 @@ var _zoom := false
 @onready var shields_label: Label = $HUD/Shields
 @onready var speed_label: Label = $HUD/Speed
 @onready var time_label: Label = $HUD/Time
+@onready var cooldowns = $HUD/Cooldowns
+@onready var snap_toast: Label = $HUD/SnapToast
 
 
 func _ready() -> void:
@@ -104,6 +112,19 @@ func _physics_process(delta: float) -> void:
 	var vig_target: float = VIG_LOCK if tier > 0 else VIG_BASE
 	_vig = lerp(_vig, vig_target, clamp(VIG_RATE * delta, 0.0, 1.0))
 	vignette.material.set_shader_parameter("intensity", _vig)
+
+	# --- camera snap (left mouse): big follower burst on a good target ---
+	if _snap_cd > 0.0:
+		_snap_cd = max(0.0, _snap_cd - delta)
+	var lmb := Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
+	var good_snap: bool = target != null and tier >= SNAP_MIN_TIER and _snap_cd <= 0.0
+	if lmb and not _lmb_prev and good_snap:
+		followers += SNAP_BURST * mult
+		_snap_cd = SNAP_COOLDOWN
+		snap_toast.modulate.a = 1.0
+	_lmb_prev = lmb
+	snap_toast.modulate.a = lerp(snap_toast.modulate.a, (1.0 if good_snap else 0.0), clamp(6.0 * delta, 0.0, 1.0))
+	cooldowns.set_cooldowns(_snap_cd, SNAP_COOLDOWN, runner._dash_cd, runner.dash_cooldown)
 
 	_update_hud(mult)
 
