@@ -35,6 +35,7 @@ enum Mode { CROSS, HOVER }
 @export var beam_attack: bool = false # charge (3 flashes) then fire a beam
 @export var charge_time: float = 1.5
 @export var beam_width: float = 8.0
+@export var tell_time: float = 0.35  # bright flash before a pellet burst
 
 var _runner: Node3D
 var _cool := 0.0
@@ -52,6 +53,8 @@ var _prev_pos := Vector3.ZERO
 var _runner_vel := Vector3.ZERO
 var _charging := false
 var _charge_t := 0.0
+var _telling := false
+var _tell_t := 0.0
 var _mat: StandardMaterial3D
 var _base_emission := Color(0.35, 0.08, 0.5)
 var _base_albedo := Color(0.75, 0.25, 0.9)
@@ -151,6 +154,15 @@ func _tick_fire(delta: float) -> void:
 			_set_flash(false)
 			_fire_beam()
 		return
+	if _telling:
+		# Brief bright tell, then the burst.
+		_tell_t += delta
+		if _tell_t >= tell_time:
+			_telling = false
+			_set_flash(false)
+			_burst_left = burst_count
+			_burst_timer = 0.0
+		return
 	if _burst_left > 0:
 		_burst_timer -= delta
 		if _burst_timer <= 0.0:
@@ -165,8 +177,9 @@ func _tick_fire(delta: float) -> void:
 				_charging = true
 				_charge_t = 0.0
 			else:
-				_burst_left = burst_count
-				_burst_timer = 0.0
+				_telling = true
+				_tell_t = 0.0
+				_set_flash(true)
 
 
 func _set_flash(on: bool) -> void:
