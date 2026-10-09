@@ -123,6 +123,7 @@ offset_right = -120.0
 offset_bottom = -140.0
 grow_horizontal = 2
 grow_vertical = 2
+scroll_active = false
 bbcode_enabled = true
 
 [node name="Sfx" type="AudioStreamPlayer" parent="."]

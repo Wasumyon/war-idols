@@ -19,6 +19,8 @@ extends Control
 ##     @ right  / @ right off
 ##     @ small  / @ small off
 ##     @ large  / @ large off
+##     @ narration / @ narration off   (alias of @ fullscreen: page-based
+##                                      prose, no text box, no name)
 ##
 ##   EVENT (ONE-SHOT) - happens on the line it is attached to, then gone.
 ##     @ stage <text>            stage direction -> italic line above
@@ -26,6 +28,7 @@ extends Control
 ##     @ music <name>            swap looping music; "@ music stop"
 ##     @ shake                   brief shake of the text area
 ##     @ glitch [seconds]        brief full-screen glitch (feed failing)
+##     @ page                    start a new page (break the narration block)
 ##     @ input_name              open the name-entry panel
 ##     @ call <scene>            hand off to another scene (not wired yet)
 ##
@@ -38,7 +41,7 @@ extends Control
 const CHARS_PER_SEC := 45.0
 const SFX_DIR := "res://vn/sfx/"
 const SFX_EXTS := ["ogg", "wav", "mp3"]
-const MODE_VERBS := ["fullscreen", "box", "center", "right", "small", "large"]
+const MODE_VERBS := ["fullscreen", "narration", "box", "center", "right", "small", "large"]
 
 ## Leave blank to play through Game.chapters in order; set a path to test one file.
 @export var chapter_file := ""
@@ -90,6 +93,7 @@ func _parse(text: String) -> void:
 	var pending_label := ""
 	var pending_staging: Array[String] = []   # EVENT directives only
 	var pending_mode := false                 # did a MODE directive just appear?
+	var pending_page := false                 # did "@ page" just force a page break?
 	var modes := {"fullscreen": false, "align": "left", "size": "normal"}
 	var cur = null
 	var last_choice = null
@@ -109,7 +113,9 @@ func _parse(text: String) -> void:
 			var dp := d.split(" ", true, 1)
 			var verb := str(dp[0])
 			var arg := str(dp[1]).strip_edges() if dp.size() > 1 else ""
-			if MODE_VERBS.has(verb):
+			if verb == "page":
+				pending_page = true
+			elif MODE_VERBS.has(verb):
 				_apply_mode(modes, verb, arg)
 				pending_mode = true
 			else:
@@ -155,7 +161,7 @@ func _parse(text: String) -> void:
 			# Merge consecutive narration into one block. Only a clean,
 			# directive-free narration line merges, so a mode change or an
 			# event starts a fresh block.
-			if is_narr and pending_staging.is_empty() and not pending_mode and not blocks.is_empty():
+			if is_narr and pending_staging.is_empty() and not pending_mode and not pending_page and not blocks.is_empty():
 				var prev: Dictionary = blocks[blocks.size() - 1]
 				if prev["narration"] and prev["staging"].is_empty() and prev["choices"].is_empty() and prev["next_label"] == "" and not prev["force_end"]:
 					prev["text"] = str(prev["text"]) + "\n" + body
@@ -178,6 +184,7 @@ func _parse(text: String) -> void:
 			pending_label = ""
 			pending_staging.clear()
 			pending_mode = false
+			pending_page = false
 			last_choice = null
 			blocks.append(cur)
 
@@ -218,7 +225,7 @@ func _parse(text: String) -> void:
 func _apply_mode(modes: Dictionary, verb: String, arg: String) -> void:
 	var on := arg != "off"
 	match verb:
-		"fullscreen":
+		"fullscreen", "narration":
 			modes["fullscreen"] = on
 		"box":
 			modes["fullscreen"] = false
@@ -285,7 +292,7 @@ func _goto(id: String) -> void:
 		portrait.visible = false
 		narration_label.visible = true
 		_narr_lines = body.split("\n")
-		_narr_shown = 1 if _narr_lines.size() > 0 else 0
+		_narr_shown = _narr_lines.size()   # the whole page shows at once
 		_render_narration()
 		_revealing = false
 		_present_choices()
@@ -504,11 +511,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _advance() -> void:
 	if name_panel.visible:
-		return
-	# Narration builds up one line per click.
-	if narration_label.visible and _narr_shown < _narr_lines.size():
-		_narr_shown += 1
-		_render_narration()
 		return
 	if _revealing:
 		text_label.visible_characters = -1
