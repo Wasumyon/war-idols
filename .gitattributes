@@ -1,0 +1,18 @@
+# Normalize line endings for all text files (LF stored in the repo; LF in the
+# working tree on every OS). Keeps Windows / macOS / Linux collaborators in sync.
+* text=auto eol=lf
+
+# Binary files - never convert line endings, never merge
+*.docx   binary
+*.doc    binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.webp   binary
+*.gif    binary
+*.glb    binary
+*.gltf   binary
+*.clip   binary
+*.rar    binary
+*.zip    binary
+*.exe    binary
