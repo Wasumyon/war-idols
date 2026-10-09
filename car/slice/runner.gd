@@ -215,16 +215,14 @@ func _on_area_entered(area: Area3D) -> void:
 	if not area.is_in_group("damaging"):
 		return
 
+	# The car is immune to filmer-targeting attacks; only the streamer hitbox
+	# (StreamHit) reacts to those.
+	if area.is_in_group("filmer"):
+		return
+
 	if dashing:
 		if area.is_in_group("obstacle"):
 			area.queue_free()
-		return
-
-	if area.is_in_group("filmer"):
-		if ducking:
-			return
-		get_parent().on_player_hit()
-		area.queue_free()
 		return
 
 	get_parent().on_player_hit()

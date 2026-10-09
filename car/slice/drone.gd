@@ -35,7 +35,7 @@ enum Mode { CROSS, HOVER }
 @export var beam_attack: bool = false # charge (3 flashes) then fire a beam
 @export var charge_time: float = 1.5
 @export var beam_width: float = 8.0
-@export var tell_time: float = 0.35  # bright flash before a pellet burst
+@export var tell_time: float = 0.6  # red-cross tell before a pellet burst
 
 var _runner: Node3D
 var _cool := 0.0
@@ -56,6 +56,7 @@ var _charge_t := 0.0
 var _telling := false
 var _tell_t := 0.0
 var _mat: StandardMaterial3D
+var _tell: Node3D
 var _base_emission := Color(0.35, 0.08, 0.5)
 var _base_albedo := Color(0.75, 0.25, 0.9)
 
@@ -92,6 +93,29 @@ func _build() -> void:
 	sh.radius = 2.0
 	cs.shape = sh
 	add_child(cs)
+
+	# Red cross "about to fire" tell, shown in front of the drone.
+	_tell = Node3D.new()
+	var cmat := StandardMaterial3D.new()
+	cmat.albedo_color = Color(1.0, 0.1, 0.1)
+	cmat.emission_enabled = true
+	cmat.emission = Color(1.0, 0.05, 0.05)
+	cmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	var hbar := MeshInstance3D.new()
+	var hb := BoxMesh.new()
+	hb.size = Vector3(2.8, 0.4, 0.4)
+	hbar.mesh = hb
+	hbar.material_override = cmat
+	_tell.add_child(hbar)
+	var vbar := MeshInstance3D.new()
+	var vb := BoxMesh.new()
+	vb.size = Vector3(0.4, 2.8, 0.4)
+	vbar.mesh = vb
+	vbar.material_override = cmat
+	_tell.add_child(vbar)
+	_tell.position = Vector3(0, 0, 2.0)
+	_tell.visible = false
+	add_child(_tell)
 
 
 func _physics_process(delta: float) -> void:
@@ -155,13 +179,15 @@ func _tick_fire(delta: float) -> void:
 			_fire_beam()
 		return
 	if _telling:
-		# Brief bright tell, then the burst.
+		# Red cross sparks TWICE, then the burst.
 		_tell_t += delta
 		if _tell_t >= tell_time:
 			_telling = false
-			_set_flash(false)
+			_tell.visible = false
 			_burst_left = burst_count
 			_burst_timer = 0.0
+		else:
+			_tell.visible = int(_tell_t / 0.15) % 2 == 0
 		return
 	if _burst_left > 0:
 		_burst_timer -= delta
@@ -179,7 +205,7 @@ func _tick_fire(delta: float) -> void:
 			else:
 				_telling = true
 				_tell_t = 0.0
-				_set_flash(true)
+				_tell.visible = true
 
 
 func _set_flash(on: bool) -> void:
@@ -202,32 +228,32 @@ func _fire_beam() -> void:
 func _fire() -> void:
 	if get_tree().get_nodes_in_group("hazard").size() >= max_active_pellets:
 		return
-	if _runner != null and global_position.distance_to(_runner.global_position) < min_range:
-		return   # deadzone: too close to fire
-	var h := Hazard.new()
-	get_parent().add_child(h)
-	h.velocity = Vector3.ZERO
-
-	if randf() < 0.5:
-		# Straight down the nearest lane, at car height.
-		var nearest := int(round(global_position.x / lane_width + (lane_count - 1) / 2.0))
-		nearest = clampi(nearest, 0, lane_count - 1)
-		var x := (nearest - (lane_count - 1) / 2.0) * lane_width
-		h.global_position = Vector3(x, 0.8, global_position.z)
-		h.velocity = Vector3(0, 0, projectile_speed)
+	if _runner == null:
 		return
+	if global_position.distance_to(_runner.global_position) < min_range:
+		return   # deadzone: too close to fire
 
-	# Aimed shot: current position / lead / short.
+	var rp: Vector3 = _runner.global_position
 	var pick := randf()
-	var aim_point: Vector3 = _runner.global_position
-	if pick >= 0.4 and pick < 0.75:
-		aim_point = _runner.global_position + _runner_vel * lead_time
-	elif pick >= 0.75:
-		aim_point = _runner.global_position + Vector3(0, 0, -short_ahead)
-		aim_point.y = 0.2
+	var h := Hazard.new()
 
-	h.global_position = global_position
-	var to := aim_point - global_position
-	h.velocity = to.normalized() * projectile_speed
-	if pick >= 0.75:
-		h.life = to.length() / projectile_speed   # vanish where it "hits the ground"
+	if pick < 0.4:
+		# ORANGE pellet - aimed at your old position; sails overhead.
+		h.body_color = Color(1.0, 0.5, 0.05)
+		get_parent().add_child(h)
+		h.global_position = global_position
+		h.velocity = (rp + Vector3(0, 2.6, 0) - global_position).normalized() * projectile_speed
+	elif pick < 0.72:
+		# YELLOW pellet - led shot that hits the car.
+		h.body_color = Color(1.0, 0.95, 0.25)
+		get_parent().add_child(h)
+		h.global_position = global_position
+		h.velocity = (rp + _runner_vel * lead_time + Vector3(0, 0.7, 0) - global_position).normalized() * projectile_speed
+	else:
+		# CYAN bolt - led shot at the filmer; car immune; duck to avoid.
+		h.body_color = Color(0.2, 1.0, 1.0)
+		h.filmer = true
+		h.bolt = true
+		get_parent().add_child(h)
+		h.global_position = global_position
+		h.velocity = (rp + _runner_vel * lead_time + Vector3(0, 1.45, 0) - global_position).normalized() * projectile_speed
