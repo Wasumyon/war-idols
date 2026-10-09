@@ -27,7 +27,8 @@ That’s strange… I thought it’d hurt more.
 
 # ART: a gauntleted arm crawling across the dirt toward the leg
 @ img arm_crawl
-Good. It’s still working. The bunker boys are still firing. Good. That’ll give me at least a minute to fix this… I claw at the caustic dirt and pull.
+Good. It’s still working. The bunker boys are still firing. Good. That’ll give me at least a minute to fix this… 
+I claw at the caustic dirt and pull.
 
 @ tremble
 My glove seal is blown. I can hear the chlorine hiss as it burns my skin, but I don’t feel it. 
@@ -76,9 +77,9 @@ Good.
 Visor down. The screams cut out, replaced with my own as I hack at the darkness.
 
 @ glitch
-The backup camera feed kicks in — glitched — showing the surroundings through a storm of artifacts. 
+The visor’s backup feed kicks in — glitched — showing the surroundings through a storm of artifacts. 
 
-I hear a man cry for his momma. 
+I hear a man cry for his momma.
 
 @ page
 And I see… Wait, that’s not right. You’re not…
