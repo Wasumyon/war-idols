@@ -12,6 +12,8 @@ class_name Drone
 enum Mode { CROSS, HOVER }
 enum Shot { ORANGE, YELLOW, CYAN, BEAM }
 
+const MODEL_SCALE := 0.6
+
 @export var mode: Mode = Mode.CROSS
 @export var shot: Shot = Shot.YELLOW
 @export var type_name: String = "drone"
@@ -56,7 +58,7 @@ var _charging := false
 var _charge_t := 0.0
 var _telling := false
 var _tell_t := 0.0
-var _mat: StandardMaterial3D
+var _tint_mats: Array[BaseMaterial3D] = []
 var _tell: Node3D
 var _base_emission := Color(0.35, 0.08, 0.5)
 var _base_albedo := Color(0.75, 0.25, 0.9)
@@ -76,21 +78,22 @@ func _ready() -> void:
 
 
 func _build() -> void:
-	var mesh := MeshInstance3D.new()
-	var ball := SphereMesh.new()
-	ball.radius = 1.6
-	ball.height = 2.4
-	mesh.mesh = ball
-	var mat := StandardMaterial3D.new()
 	var base := _shot_color()
 	_base_albedo = base
 	_base_emission = base * 0.55
-	mat.albedo_color = _base_albedo
-	mat.emission_enabled = true
-	mat.emission = _base_emission
-	mesh.material_override = mat
-	_mat = mat
-	add_child(mesh)
+
+	# Real drone model (scaled + centred on the origin).
+	var ps := load("res://droneEdited20.glb") as PackedScene
+	if ps != null:
+		var model: Node3D = ps.instantiate()
+		model.scale = Vector3.ONE * MODEL_SCALE
+		add_child(model)
+		var center := _model_center(model)
+		model.position = -center * MODEL_SCALE
+		_tint_model(model)
+		var ap := model.get_node_or_null("AnimationPlayer")
+		if ap is AnimationPlayer:
+			(ap as AnimationPlayer).play("idle")
 
 	var cs := CollisionShape3D.new()
 	var sh := SphereShape3D.new()
@@ -213,10 +216,51 @@ func _tick_fire(delta: float) -> void:
 
 
 func _set_flash(on: bool) -> void:
-	if _mat == null:
-		return
-	_mat.emission = Color(1, 1, 1) if on else _base_emission
-	_mat.albedo_color = Color(1, 1, 1) if on else _base_albedo
+	for m in _tint_mats:
+		m.emission = Color(1, 1, 1) if on else _base_emission
+
+
+## Adds an emissive tint (munition colour) to each of the model's surfaces,
+## keeping its texture. The list is flipped white for the charge/tell flash.
+func _tint_model(model: Node) -> void:
+	for child in model.find_children("*", "MeshInstance3D", true, false):
+		var mi := child as MeshInstance3D
+		if mi.mesh == null:
+			continue
+		for i in mi.mesh.get_surface_count():
+			var src := mi.get_active_material(i)
+			var m: BaseMaterial3D
+			if src is BaseMaterial3D:
+				m = (src as BaseMaterial3D).duplicate()
+			else:
+				m = StandardMaterial3D.new()
+			m.emission_enabled = true
+			m.emission = _base_emission
+			mi.set_surface_override_material(i, m)
+			_tint_mats.append(m)
+
+
+## Centre of the model's meshes, in the model's own (pre-position) frame.
+func _model_center(root: Node3D) -> Vector3:
+	var inv := root.global_transform.affine_inverse()
+	var acc := AABB()
+	var started := false
+	var stack: Array = [root]
+	while stack.size() > 0:
+		var n: Node = stack.pop_back()
+		for c in n.get_children():
+			stack.append(c)
+		if n is MeshInstance3D and (n as MeshInstance3D).mesh != null:
+			var mi := n as MeshInstance3D
+			var a: AABB = inv * (mi.global_transform * mi.mesh.get_aabb())
+			if not started:
+				acc = a
+				started = true
+			else:
+				acc = acc.merge(a)
+	if not started:
+		return Vector3.ZERO
+	return acc.position + acc.size * 0.5
 
 
 ## Body colour advertises this drone's munition, so you can read the threat.
