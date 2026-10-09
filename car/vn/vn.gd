@@ -118,6 +118,7 @@ func _parse(text: String) -> void:
 	var pending_staging: Array[String] = []   # EVENT directives only
 	var pending_mode := false                 # did a MODE directive just appear?
 	var pending_page := false                 # did "@ page" just force a page break?
+	var pending_blank := false                # was there a blank line (paragraph gap)?
 	var modes := {"fullscreen": false, "align": "left", "size": "normal"}
 	var cur = null
 	var last_choice = null
@@ -148,7 +149,10 @@ func _parse(text: String) -> void:
 
 	for raw in text.split("\n"):
 		var line: String = raw.strip_edges()
-		if line == "" or line.begins_with("#"):
+		if line == "":
+			pending_blank = true   # a blank line in the source = a gap on the page
+			continue
+		if line.begins_with("#"):
 			continue
 
 		if line.begins_with("=="):
@@ -214,7 +218,7 @@ func _parse(text: String) -> void:
 			# Merge consecutive narration into one block. Only a clean,
 			# directive-free narration line merges, so a mode change or an
 			# event starts a fresh block.
-			if is_narr and pending_staging.is_empty() and not pending_mode and not pending_page and not blocks.is_empty():
+			if is_narr and pending_staging.is_empty() and not pending_mode and not pending_page and not pending_blank and not blocks.is_empty():
 				var prev: Dictionary = blocks[blocks.size() - 1]
 				if prev["narration"] and prev["staging"].is_empty() and prev["choices"].is_empty() and prev["next_label"] == "" and not prev["force_end"]:
 					prev["text"] = str(prev["text"]) + "\n" + body
@@ -233,12 +237,14 @@ func _parse(text: String) -> void:
 				"next_label": "",
 				"force_end": false,
 				"page_break": pending_page,
+				"gap_before": pending_blank,
 				"staging": pending_staging.duplicate(),
 			}
 			pending_label = ""
 			pending_staging.clear()
 			pending_mode = false
 			pending_page = false
+			pending_blank = false
 			last_choice = null
 			blocks.append(cur)
 
@@ -263,6 +269,7 @@ func _parse(text: String) -> void:
 			"effects": b["effects"],
 			"staging": b["staging"],
 			"page_break": b["page_break"],
+			"gap_before": b["gap_before"],
 			"next": _resolve(str(b["next_label"]), bool(b["force_end"]), i, blocks, labels),
 			"choices": [],
 		}
@@ -364,6 +371,8 @@ func _goto(id: String, keep_page := false) -> void:
 		_narr_shown = 1 if _narr_lines.size() > 0 else 0
 		if not keep_page:
 			_page = PackedStringArray()
+		elif bool(node.get("gap_before", false)) and _page.size() > 0:
+			_page.append("")   # the source's blank line, kept as a paragraph gap
 		if _narr_lines.size() > 0:
 			_page.append(_narr_lines[0])
 		_render_narration()
