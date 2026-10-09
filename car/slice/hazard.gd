@@ -71,5 +71,20 @@ func _physics_process(delta: float) -> void:
 	if life <= 0.0:
 		queue_free()
 		return
+
+	# Pellets smash solid (tall) obstacles on contact, leaving a blast.
+	if not filmer:
+		for o in get_tree().get_nodes_in_group("obstacle"):
+			if o.flat:
+				continue   # low slabs are jumpable, not solid
+			if global_position.distance_to(o.global_position) < 2.6:
+				var at: Vector3 = o.global_position
+				o.queue_free()
+				var b := Blast.new()
+				get_parent().add_child(b)
+				b.global_position = at
+				queue_free()
+				return
+
 	if _runner != null and global_position.z > _runner.global_position.z + 25.0:
 		queue_free()
