@@ -19,7 +19,9 @@
 
 # ART: blackness opens; a severed leg in power armour, pool of blood on yellow-green soil, a short distance away
 @ img leg_pool
-A leg. My leg. It shouldn’t be there.
+A leg. 
+
+[b]MY[/b] leg. It shouldn’t be there.
 
 That’s strange… I thought it’d hurt more.
 
@@ -28,7 +30,7 @@ That’s strange… I thought it’d hurt more.
 Good. It’s still working. The bunker boys are still firing. Good. That’ll give me at least a minute to fix this… I grab at the toxic dirt and pull.
 
 @ tremble
-Half the glove’s blown off. I can hear the chlorine burn my skin, but I don’t feel it. Bartok is screaming names on comms. Roll call. I know all of them. That one’s mine. But I can’t answer — can’t make a noise.
+My glove’s seal is blown. I can hear the chlorine hiss as it burns my skin, but I don’t feel it. Bartok is screaming names on comms. Roll call. I know all of them. That one’s mine. But I can’t answer — can’t make a noise.
 
 Only a little… more.
 
@@ -44,14 +46,18 @@ I can hear it again. The suit comms are chaos again. Screams. Shouts. Swears. Or
 # ART: a hand closing on the severed leg
 @ img grab_leg
 @ sfx squish
-I have it now! I can fight again. Just gotta… put it back on.
+I have it now! Boys! I’m coming back for you. Just gotta… put it back on.
 
 # ART: a taloned heel stomping down on the arm
 @ img stomp
 You damned bugs…
 
 @ sfx knife
-I reach for the strap on my belt for the nanoknife and jam it into the insectoid’s disgusting tarsus. A blow against my helmet and all is black.
+In an single action drilled to automation, I unsheath my nanoknife and jam it into the insectoid’s tarsus. It shrieks. Everyone thinks the hand to hand training is useless with guns and drones.
+
+But war’s not changed in a million years. Won’t change in a million neither.
+
+A blow against my helmet and all is black.
 
 # ART: black
 @ img black
