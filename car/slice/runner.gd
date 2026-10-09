@@ -46,7 +46,7 @@ var _bubble: MeshInstance3D
 var _lines: Node3D
 
 @onready var streamer: MeshInstance3D = $Streamer
-@onready var body: MeshInstance3D = $Body
+@onready var body: Node3D = $Body
 
 
 func _ready() -> void:

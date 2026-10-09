@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://c2gyvqy7rpg6k"]
+[gd_scene load_steps=26 format=3 uid="uid://c2gyvqy7rpg6k"]
 
 [ext_resource type="Script" uid="uid://dhcujkhfhdqtd" path="res://slice/slice.gd" id="1_slice"]
 [ext_resource type="Script" uid="uid://bclthao11g0l8" path="res://slice/runner.gd" id="2_runner"]
@@ -8,6 +8,7 @@
 [ext_resource type="Script" path="res://slice/backdrop_layer.gd" id="6_layer"]
 [ext_resource type="Script" uid="uid://bw0tsr24vini5" path="res://slice/cooldown_bubbles.gd" id="7_cooldowns"]
 [ext_resource type="Script" path="res://slice/lane_lines.gd" id="8_lanelines"]
+[ext_resource type="Script" path="res://slice/vehicle.gd" id="9_vehicle"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
 sky_horizon_color = Color(0.55, 0.53, 0.5, 1)
@@ -58,12 +59,6 @@ albedo_color = Color(0.3, 0.29, 0.27, 1)
 shading_mode = 0
 disable_fog = true
 albedo_color = Color(0.18, 0.17, 0.16, 1)
-
-[sub_resource type="StandardMaterial3D" id="BodyMat_1"]
-albedo_color = Color(0.25, 0.45, 0.85, 1)
-
-[sub_resource type="BoxMesh" id="BodyMesh_1"]
-size = Vector3(2, 1.1, 4)
 
 [sub_resource type="StandardMaterial3D" id="StreamerMat_1"]
 albedo_color = Color(1, 0.2, 0.6, 1)
@@ -149,10 +144,8 @@ forward_factor = 0.06
 [node name="Runner" type="Node3D" parent="."]
 script = ExtResource("2_runner")
 
-[node name="Body" type="MeshInstance3D" parent="Runner"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
-material_override = SubResource("BodyMat_1")
-mesh = SubResource("BodyMesh_1")
+[node name="Body" type="Node3D" parent="Runner"]
+script = ExtResource("9_vehicle")
 
 [node name="Streamer" type="MeshInstance3D" parent="Runner"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
