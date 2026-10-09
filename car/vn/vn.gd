@@ -33,6 +33,9 @@ extends Control
 ##                               files live in res://vn/img/<name>.png|webp|jpg
 ##                               "@ img none" clears it
 ##     @ zoom <factor>           zoom the illustration; "@ zoom 1" resets
+##     @ fade [seconds]          fade the screen to black (default 1.5s)
+##                               "@ img black" / "@ img white" set a flat colour
+##                               "@ fade off" clears a fade
 ##     @ input_name              open the name-entry panel
 ##     @ call <scene>            hand off to another scene (not wired yet)
 ##
@@ -51,9 +54,10 @@ const CHARS_PER_SEC := 45.0
 const SFX_DIR := "res://vn/sfx/"
 const SFX_EXTS := ["ogg", "wav", "mp3"]
 const MODE_VERBS := ["fullscreen", "narration", "box", "center", "right", "small", "large"]
-const EVENT_VERBS := ["stage", "sfx", "music", "shake", "glitch", "page", "img", "image", "zoom", "input_name", "call"]
+const EVENT_VERBS := ["stage", "sfx", "music", "shake", "glitch", "page", "img", "image", "zoom", "fade", "input_name", "call"]
 const IMG_DIR := "res://vn/img/"
 const IMG_EXTS := ["png", "webp", "jpg", "jpeg"]
+const BG_DEFAULT := Color(0.07, 0.07, 0.09, 1)
 
 ## Leave blank to play through Game.chapters in order; set a path to test one file.
 @export var chapter_file := ""
@@ -66,7 +70,8 @@ var _char_count := 0
 var _narr_lines := PackedStringArray()
 var _narr_shown := 0
 var _narr_page_start := 0   # index of the first line on the current page
-var _fade_tween: Tween
+var _img_fade_tween: Tween
+var _screen_fade_tween: Tween
 var _zoom_tween: Tween
 
 @onready var box: ColorRect = $Box
@@ -81,7 +86,9 @@ var _zoom_tween: Tween
 @onready var sfx_player: AudioStreamPlayer = $Sfx
 @onready var music_player: AudioStreamPlayer = $Music
 @onready var glitch: ColorRect = $Glitch
+@onready var fade: ColorRect = $Fade
 @onready var bg_image: TextureRect = $BgImage
+@onready var bg_color: ColorRect = $Background
 
 
 func _ready() -> void:
@@ -101,6 +108,7 @@ func _load(path: String) -> void:
 		push_error("VN: cannot open " + path)
 		return
 	_parse(f.get_as_text())
+	_fade_reset()
 
 
 func _parse(text: String) -> void:
@@ -325,6 +333,12 @@ func _goto(id: String) -> void:
 	if _has_staging(node, "zoom"):
 		var zv := _staging_arg(node, "zoom")
 		_zoom(float(zv) if zv != "" else 1.1)
+	if _has_staging(node, "fade"):
+		var fa := _staging_arg(node, "fade")
+		if fa == "off" or fa == "reset":
+			_fade_reset()
+		else:
+			_fade_to_black(float(fa) if fa != "" else 1.5)
 
 	_clear_choices()
 	hint.text = ""
@@ -479,30 +493,63 @@ func _load_texture(name: String) -> Texture2D:
 
 
 ## EVENT (sticky): swap the full-screen illustration behind the text.
+## "@ img black" / "@ img white" just set the backdrop colour - no file needed.
 func _set_image(name: String) -> void:
 	if name == "" or name == "none" or name == "off":
-		if _fade_tween != null and _fade_tween.is_valid():
-			_fade_tween.kill()
-		if _zoom_tween != null and _zoom_tween.is_valid():
-			_zoom_tween.kill()
-		bg_image.texture = null
-		bg_image.scale = Vector2.ONE
-		bg_image.modulate.a = 1.0
+		_clear_image()
+		bg_color.color = BG_DEFAULT
+		return
+	if name == "black" or name == "white":
+		_clear_image()
+		bg_color.color = Color(0, 0, 0, 1) if name == "black" else Color(1, 1, 1, 1)
 		return
 	var tex := _load_texture(name)
 	if tex == null:
 		push_warning("VN: missing image '%s' (expected %s%s.png|webp|jpg)" % [name, IMG_DIR, name])
 		return
-	if _fade_tween != null and _fade_tween.is_valid():
-		_fade_tween.kill()
-	if _zoom_tween != null and _zoom_tween.is_valid():
-		_zoom_tween.kill()
+	_clear_image()
+	bg_color.color = BG_DEFAULT
 	bg_image.texture = tex
 	bg_image.pivot_offset = bg_image.size * 0.5
 	bg_image.scale = Vector2.ONE
 	bg_image.modulate.a = 0.0
-	_fade_tween = create_tween()
-	_fade_tween.tween_property(bg_image, "modulate:a", 1.0, 0.25)
+	_img_fade_tween = create_tween()
+	_img_fade_tween.tween_property(bg_image, "modulate:a", 1.0, 0.25)
+
+
+func _clear_image() -> void:
+	if _img_fade_tween != null and _img_fade_tween.is_valid():
+		_img_fade_tween.kill()
+	if _zoom_tween != null and _zoom_tween.is_valid():
+		_zoom_tween.kill()
+	bg_image.texture = null
+	bg_image.scale = Vector2.ONE
+	bg_image.modulate.a = 1.0
+
+
+## EVENT: fade the whole screen to black over [duration] seconds (default 1.5).
+func _fade_to_black(duration: float) -> void:
+	if fade == null:
+		return
+	fade.visible = true
+	if _screen_fade_tween != null and _screen_fade_tween.is_valid():
+		_screen_fade_tween.kill()
+	if duration <= 0.0:
+		fade.color.a = 1.0
+		return
+	fade.color.a = 0.0
+	_screen_fade_tween = create_tween()
+	_screen_fade_tween.tween_property(fade, "color:a", 1.0, duration)
+
+
+## Clears a screen fade ("@ fade off"); also called when a new scene loads.
+func _fade_reset() -> void:
+	if fade == null:
+		return
+	if _screen_fade_tween != null and _screen_fade_tween.is_valid():
+		_screen_fade_tween.kill()
+	fade.color.a = 0.0
+	fade.visible = false
 
 
 ## EVENT: zoom the illustration. "@ zoom 1.15" (factor, default 1.1). "@ zoom 1" resets.

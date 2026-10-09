@@ -38,6 +38,7 @@ I know all of them.
 
 Then mine. But I can’t answer — can’t make a noise.
 
+@ page
 Only a little… more.
 
 @ tremble
@@ -59,20 +60,29 @@ I have it now! Boys! I’m coming back for you. Just gotta… put it back on.
 You damned bugs…
 
 @ sfx knife
-In a single action drilled into automation, I unsheathe my nanoknife and jam it into the insectoid’s tarsus. It shrieks. This one’s mine.
+In a single action drilled to automation, I unsheathe my nanoknife and jam it into the insectoid’s tarsus. It shrieks. Good. This one’s mine.
 
-We laughed when we took Combatives. Who needs a knife when you got guns and drones?
+We laughed when we were forced to take Combatives. Who needs a knife when you got guns and drones?
 
-But war’s not changed in a million years. Won’t change in a million neither.
+But war’s not changed in a million years. Won’t change in the next million neither.
 
+@ page
 A blow against my helmet and all is black.
+
+Good.
 
 # ART: black
 @ img black
 Visor down again. The screams cut out, replaced with my own as I hack into the darkness.
 
 @ glitch
-The backup camera feed kicks in — glitched — showing the surroundings through a storm of artifacts. I hear a man cry for his momma. And I see… Wait, that’s not right. You’re not…
+The backup camera feed kicks in — glitched — showing the surroundings through a storm of artifacts. 
+
+I hear a man cry for his momma. 
+
+@ page
+And I see… Wait, that’s not right. You’re not…
 
 @ sfx blow
 @ sfx flatline
+@ fade 2.5
