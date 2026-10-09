@@ -1,9 +1,10 @@
 extends Node3D
 ## Soft-lane runner.
 ##   A / D            strafe
-##   W / S            boost / slow
+##   W                boost
+##   S                duck / cover  (avoids filmer-targeting attacks; suspends filming)
 ##   SPACE            jump         (0.5s cooldown between jumps)
-##   CTRL             duck / cover (avoids filmer-targeting attacks; suspends filming)
+##   CTRL             slow
 ##   SHIFT            dash         (bubble + speedlines; super armour; smashes obstacles)
 ##
 ## NOTE: Shift and Ctrl are read from the physical key, not the InputMap.
@@ -143,7 +144,7 @@ func _physics_process(delta: float) -> void:
 	var target_speed := base_speed
 	if Input.is_action_pressed("accelerate"):
 		target_speed = boost_speed
-	elif Input.is_action_pressed("brake"):
+	elif Input.is_action_pressed("brake") or Input.is_physical_key_pressed(KEY_CTRL):
 		target_speed = slow_speed
 	if dashing:
 		target_speed = dash_speed
@@ -163,8 +164,8 @@ func _physics_process(delta: float) -> void:
 		_grounded = true
 	position.y = _height
 
-	# --- duck: Ctrl, Q, or either side mouse button (top/rear thumb) ---
-	ducking = Input.is_physical_key_pressed(KEY_CTRL) \
+	# --- duck: S, Q, or either side mouse button (top/rear thumb) ---
+	ducking = Input.is_physical_key_pressed(KEY_S) \
 		or Input.is_physical_key_pressed(KEY_Q) \
 		or Input.is_mouse_button_pressed(MOUSE_BUTTON_XBUTTON1) \
 		or Input.is_mouse_button_pressed(MOUSE_BUTTON_XBUTTON2)
