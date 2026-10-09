@@ -27,7 +27,7 @@ That’s strange… I thought it’d hurt more.
 
 # ART: a gauntleted arm crawling across the dirt toward the leg
 @ img arm_crawl
-Good. It’s still working. The bunker boys are still firing. Good. That’ll give me at least a minute to fix this… I grab at the toxic dirt and pull.
+Good. It’s still working. The bunker boys are still firing. Good. That’ll give me at least a minute to fix this… I claw at the caustic dirt and pull.
 
 @ tremble
 My glove seal is blown. I can hear the chlorine hiss as it burns my skin, but I don’t feel it. 
@@ -60,7 +60,7 @@ I have it now! Boys! I’m coming back for you. Just gotta… put it back on.
 You damned bugs…
 
 @ sfx knife
-In a single action drilled to automation, I unsheathe my nanoknife and jam it into the insectoid’s tarsus. It shrieks. Good. This one’s mine.
+In a single motion, drilled to automation, I unsheathe my nanoknife and jam it into the insectoid’s tarsus. It shrieks. Good. This one’s mine.
 
 We laughed when we were forced to take Combatives. Who needs a knife when you got guns and drones?
 
