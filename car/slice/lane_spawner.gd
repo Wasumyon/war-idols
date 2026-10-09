@@ -38,7 +38,9 @@ class_name LaneSpawner
 # --- filmer-targeting lasers ---
 @export var laser_interval := 7.0
 
-var lane_weights := [3.0, 2.0, 1.0, 2.0, 3.0]
+# Relative density per lane, DERIVED from Game.lane_count in _ready():
+# outermost lanes densest, centre sparsest (mirrored). Never hand-edited.
+var lane_weights: Array[float] = []
 
 var _runner: Node3D
 var _next_z := 0.0
@@ -53,6 +55,20 @@ var _last_lane := -1
 
 func _ready() -> void:
 	_runner = get_tree().get_first_node_in_group("runner")
+	_build_lane_weights()
+
+
+## Outermost lane = 3.0, centre = 1.0, mirrored. Matches [3,2,1,2,3] for 5 lanes.
+func _build_lane_weights() -> void:
+	lane_weights.clear()
+	var n: int = Game.lane_count
+	if n <= 1:
+		lane_weights.append(1.0)
+		return
+	var mid := (n - 1) / 2.0
+	for i in n:
+		var d: float = abs(float(i) - mid) / mid
+		lane_weights.append(1.0 + 2.0 * d)
 
 
 func lane_x(index: int) -> float:
