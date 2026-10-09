@@ -4,6 +4,9 @@
 # no text box. The player is rescued/medically discharged AFTER this; nothing
 # here is a death scene (the flatline is an effect, not an ending).
 #
+# "Good." is his tic - stoic acceptance when things go badly (Jocko). Intentional;
+# do not "fix" the repetition.
+#
 # Illustrations live in res://vn/img/ - see "# ART:" notes for what to draw.
 #   @ narration       this scene is unattributed full-screen prose
 #   @ img <name>      swap the full-screen illustration (res://vn/img/<name>.png)
@@ -14,17 +17,20 @@
 @ narration
 @ preset tremble = shake + zoom 1.15 + sfx shuffle
 
-# ART: black opens on a severed leg in power armour, pool of blood, yellow-green soil
+# ART: blackness opens; a severed leg in power armour, pool of blood on yellow-green soil, a short distance away
 @ img leg_pool
-My leg. It shouldn’t be there.
+A leg. My leg. It shouldn’t be there.
 
-# ART: a gauntleted arm crawling across the soil toward the leg
+That’s strange… I thought it’d hurt more.
+
+# ART: a gauntleted arm crawling across the dirt toward the leg
 @ img arm_crawl
-My arm comes into view. It’s still working.
+Good. It’s still working. The bunker boys are still firing. Good. That’ll give me at least a minute to fix this… I grab at the toxic dirt and pull.
 
-# ART: (same frame, tighter) the pull at the dirt
 @ tremble
-I grab at the toxic dirt and pull. Only a little… more.
+Half the glove’s blown off. I can hear the chlorine burn my skin, but I don’t feel it. Bartok is screaming names on comms. Roll call. I know all of them. That one’s mine. But I can’t answer — can’t make a noise.
+
+Only a little… more.
 
 @ tremble
 I was prepared to give my life up for my comrades. But… not my leg.
@@ -33,7 +39,7 @@ I was prepared to give my life up for my comrades. But… not my leg.
 I can still fight… I’m not going to let them take my home away. My dad fought for it, and his dad fought for it, and I’m sure his dad did too.
 
 @ tremble
-I can hear it again. The suit coms are running again. Screams. Shouts. Swears. Orders from hundreds of miles away.
+I can hear it again. The suit comms are chaos again. Screams. Shouts. Swears. Orders from hundreds of miles away.
 
 # ART: a hand closing on the severed leg
 @ img grab_leg
