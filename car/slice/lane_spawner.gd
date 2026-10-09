@@ -27,7 +27,6 @@ class_name LaneSpawner
 @export var air_spawn_ahead := 200.0
 @export var hover_chance := 0.4
 @export var max_hover := 2
-@export var beam_drone_chance := 0.4   # cross drones that fire a charged beam
 
 # --- side battle clusters (far outside the lane corridor) ---
 @export var battle_interval := 5.5
@@ -136,6 +135,8 @@ func _spawn_row(z: float) -> void:
 
 func _spawn_air() -> void:
 	var z := _runner.global_position.z - air_spawn_ahead
+	# Each drone is typed: it only ever fires this one munition.
+	var shot: int = [Drone.Shot.ORANGE, Drone.Shot.YELLOW, Drone.Shot.CYAN, Drone.Shot.BEAM][randi() % 4]
 	var hovering := randf() < hover_chance
 	if hovering and get_tree().get_nodes_in_group("hover_drone").size() >= max_hover:
 		hovering = false
@@ -143,6 +144,7 @@ func _spawn_air() -> void:
 	if hovering:
 		var dh := Drone.new()
 		dh.mode = Drone.Mode.HOVER
+		dh.shot = shot
 		dh.tier = 2
 		dh.value = 2.0
 		add_child(dh)
@@ -151,10 +153,10 @@ func _spawn_air() -> void:
 		var side := -1.0 if randf() < 0.5 else 1.0
 		var dc := Drone.new()
 		dc.mode = Drone.Mode.CROSS
+		dc.shot = shot
 		dc.tier = 3
 		dc.value = 2.8
 		dc.lateral_speed = randf_range(18.0, 28.0) * -side
-		dc.beam_attack = randf() < beam_drone_chance
 		add_child(dc)
 		dc.global_position = Vector3(side * 26.0, randf_range(6.0, 11.0), z)
 

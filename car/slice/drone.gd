@@ -10,8 +10,10 @@ class_name Drone
 ##   short   (25%) - into the ground in front of you (a near miss)
 
 enum Mode { CROSS, HOVER }
+enum Shot { ORANGE, YELLOW, CYAN, BEAM }
 
 @export var mode: Mode = Mode.CROSS
+@export var shot: Shot = Shot.YELLOW
 @export var type_name: String = "drone"
 @export var tier: int = 3
 @export var value: float = 2.5
@@ -32,7 +34,6 @@ enum Mode { CROSS, HOVER }
 @export var lane_width: float = 4.0
 @export var max_active_pellets: int = 14
 @export var min_range: float = 16.0   # deadzone: holds fire when this close
-@export var beam_attack: bool = false # charge (3 flashes) then fire a beam
 @export var charge_time: float = 1.5
 @export var beam_width: float = 8.0
 @export var tell_time: float = 0.6  # red-cross tell before a pellet burst
@@ -199,7 +200,7 @@ func _tick_fire(delta: float) -> void:
 		_cool -= delta
 		if _cool <= 0.0:
 			_cool = fire_interval
-			if beam_attack:
+			if shot == Shot.BEAM:
 				_charging = true
 				_charge_t = 0.0
 			else:
@@ -234,26 +235,27 @@ func _fire() -> void:
 		return   # deadzone: too close to fire
 
 	var rp: Vector3 = _runner.global_position
-	var pick := randf()
 	var h := Hazard.new()
+	var aim: Vector3 = rp
 
-	if pick < 0.4:
-		# ORANGE pellet - aimed at your old position; sails overhead.
-		h.body_color = Color(1.0, 0.5, 0.05)
-		get_parent().add_child(h)
-		h.global_position = global_position
-		h.velocity = (rp + Vector3(0, 2.6, 0) - global_position).normalized() * projectile_speed
-	elif pick < 0.72:
-		# YELLOW pellet - led shot that hits the car.
-		h.body_color = Color(1.0, 0.95, 0.25)
-		get_parent().add_child(h)
-		h.global_position = global_position
-		h.velocity = (rp + _runner_vel * lead_time + Vector3(0, 0.7, 0) - global_position).normalized() * projectile_speed
-	else:
-		# CYAN bolt - led shot at the filmer; car immune; duck to avoid.
-		h.body_color = Color(0.2, 1.0, 1.0)
-		h.filmer = true
-		h.bolt = true
-		get_parent().add_child(h)
-		h.global_position = global_position
-		h.velocity = (rp + _runner_vel * lead_time + Vector3(0, 1.45, 0) - global_position).normalized() * projectile_speed
+	match shot:
+		Shot.ORANGE:
+			# Aimed at your old position; sails overhead.
+			h.body_color = Color(1.0, 0.5, 0.05)
+			aim = rp + Vector3(0, 2.6, 0)
+		Shot.YELLOW:
+			# Led shot that hits the car.
+			h.body_color = Color(1.0, 0.95, 0.25)
+			aim = rp + _runner_vel * lead_time + Vector3(0, 0.7, 0)
+		Shot.CYAN:
+			# Led bolt at the filmer; car immune; duck to avoid.
+			h.body_color = Color(0.2, 1.0, 1.0)
+			h.filmer = true
+			h.bolt = true
+			aim = rp + _runner_vel * lead_time + Vector3(0, 1.45, 0)
+		_:
+			return
+
+	get_parent().add_child(h)
+	h.global_position = global_position
+	h.velocity = (aim - global_position).normalized() * projectile_speed
