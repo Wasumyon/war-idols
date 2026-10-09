@@ -21,7 +21,7 @@
 @ img leg_pool
 A leg. 
 
-[b]MY[/b] leg. It shouldn’t be there.
+My leg. It shouldn’t be there.
 
 That’s strange… I thought it’d hurt more.
 
@@ -53,7 +53,7 @@ I have it now! Boys! I’m coming back for you. Just gotta… put it back on.
 You damned bugs…
 
 @ sfx knife
-In an single action drilled to automation, I unsheath my nanoknife and jam it into the insectoid’s tarsus. It shrieks. Everyone thinks the hand to hand training is useless with guns and drones.
+In a single action drilled into automation, I unsheathe my nanoknife and jam it into the insectoid’s tarsus. It shrieks. We laughed when we took Army Combatives. Who needs a knife when you got guns and drones?
 
 But war’s not changed in a million years. Won’t change in a million neither.
 
