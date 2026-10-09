@@ -27,7 +27,7 @@ That’s strange… I thought it’d hurt more.
 
 # ART: a gauntleted arm crawling across the dirt toward the leg
 @ img arm_crawl
-Good. It’s still working. The bunker boys are still firing. Good. That’ll give me at least a minute to fix this… 
+Good. It’s still working. The bunker boys are still firing.| Good.| That’ll give me at least a minute to fix this… 
 I claw at the caustic dirt and pull.
 
 @ tremble

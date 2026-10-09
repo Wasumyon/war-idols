@@ -47,6 +47,11 @@ extends Control
 ## A line is dialogue ONLY if the text before the first ":" is one word.
 ## So "Chip: hi" is dialogue, but "Our contract: split 50/50" is narration.
 ##
+## In NARRATION:
+##   blank line  = a paragraph gap (an empty line on screen)
+##   "|"         = an extra click: the typewriter pauses there, but the
+##                 text keeps rendering on the same line  (a|b -> "a b")
+##
 ## "Player:" resolves to Game.display_name() - "Blockhead" until the player
 ## enters a name, then that name. "{player}" in text expands the same way.
 
@@ -71,9 +76,9 @@ var _char_count := 0
 var _narr_pos := 0.0       # narration typewriter cursor (visible chars)
 var _narr_target := 0      # total chars in the current narration page
 var _narr_typing := false
-var _narr_lines := PackedStringArray()
+var _narr_units: Array = []        # current block: reveal units {"t": text, "b": new-line?}
 var _narr_shown := 0
-var _page := PackedStringArray()   # lines currently visible on the narration page
+var _page: Array = []              # revealed units on the narration page (same shape)
 var _img_fade_tween: Tween
 var _screen_fade_tween: Tween
 var _zoom_tween: Tween
@@ -371,21 +376,21 @@ func _goto(id: String, keep_page := false) -> void:
 		narration_label.visible = true
 		if bool(node.get("page_break", false)):
 			keep_page = false
-		_narr_lines = body.split("\n")
-		_narr_shown = 1 if _narr_lines.size() > 0 else 0
+		_narr_units = _split_units(body)
+		_narr_shown = 1 if _narr_units.size() > 0 else 0
 		if not keep_page:
-			_page = PackedStringArray()
+			_page = []
 		elif bool(node.get("gap_before", false)) and _page.size() > 0:
-			_page.append("")   # the source's blank line, kept as a paragraph gap
-		if _narr_lines.size() > 0:
-			_page.append(_narr_lines[0])
+			_page.append({"t": "", "b": true})   # the source's blank line, kept as a gap
+		if _narr_units.size() > 0:
+			_page.append(_narr_units[0])
 		_render_narration(not keep_page)
 		if not _narration_fits():
 			_flip_page()
 		_revealing = false
 		_present_choices()
 	else:
-		_page = PackedStringArray()
+		_page = []
 		narration_label.visible = false
 		box.visible = true
 		portrait.visible = true
@@ -400,8 +405,32 @@ func _goto(id: String, keep_page := false) -> void:
 		_show_name_input()
 
 
+## Split a block body into reveal units. One source line = one click, unless
+## it contains "|" pause marks - each split is another click that still
+## renders on the same line.
+func _split_units(body: String) -> Array:
+	var units: Array = []
+	for ln in body.split("\n"):
+		var segs := str(ln).split("|")
+		for i in segs.size():
+			units.append({"t": str(segs[i]).strip_edges(), "b": i == 0})
+	return units
+
+
+## The visible page as one string: new-line units follow a "\n", pause
+## continuations follow a space.
+func _page_text() -> String:
+	var out := ""
+	for i in _page.size():
+		var u: Dictionary = _page[i]
+		if i > 0:
+			out += "\n" if bool(u.get("b", true)) else " "
+		out += str(u.get("t", ""))
+	return out
+
+
 func _render_narration(reset := false) -> void:
-	narration_label.text = "\n".join(_page)
+	narration_label.text = _page_text()
 	_narr_target = narration_label.get_total_character_count()
 	if reset or _narr_pos > float(_narr_target):
 		_narr_pos = 0.0
@@ -418,7 +447,8 @@ func _narration_fits() -> bool:
 func _flip_page() -> void:
 	if _page.size() <= 1:
 		return
-	_page = PackedStringArray([_page[_page.size() - 1]])
+	var last: Dictionary = _page[_page.size() - 1]
+	_page = [{"t": str(last.get("t", "")), "b": true}]
 	_render_narration(true)
 
 
@@ -714,8 +744,8 @@ func _advance() -> void:
 		narration_label.visible_characters = int(_narr_pos)
 		_narr_typing = false
 		return
-	if narration_label.visible and _narr_shown < _narr_lines.size():
-		_page.append(_narr_lines[_narr_shown])
+	if narration_label.visible and _narr_shown < _narr_units.size():
+		_page.append(_narr_units[_narr_shown])
 		_narr_shown += 1
 		_render_narration()
 		if not _narration_fits():
