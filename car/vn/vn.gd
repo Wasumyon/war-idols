@@ -51,6 +51,7 @@ extends Control
 ## enters a name, then that name. "{player}" in text expands the same way.
 
 const CHARS_PER_SEC := 45.0
+const NARR_CHARS_PER_SEC := 80.0    # narration typewriter speed (brisk; tune to taste)
 const SFX_DIR := "res://vn/sfx/"
 const SFX_EXTS := ["ogg", "wav", "mp3"]
 const MODE_VERBS := ["fullscreen", "narration", "box", "center", "right", "small", "large"]
@@ -67,6 +68,9 @@ var _node_id := ""
 var _revealing := false
 var _char_timer := 0.0
 var _char_count := 0
+var _narr_pos := 0.0       # narration typewriter cursor (visible chars)
+var _narr_target := 0      # total chars in the current narration page
+var _narr_typing := false
 var _narr_lines := PackedStringArray()
 var _narr_shown := 0
 var _page := PackedStringArray()   # lines currently visible on the narration page
@@ -375,7 +379,7 @@ func _goto(id: String, keep_page := false) -> void:
 			_page.append("")   # the source's blank line, kept as a paragraph gap
 		if _narr_lines.size() > 0:
 			_page.append(_narr_lines[0])
-		_render_narration()
+		_render_narration(not keep_page)
 		if not _narration_fits():
 			_flip_page()
 		_revealing = false
@@ -396,8 +400,13 @@ func _goto(id: String, keep_page := false) -> void:
 		_show_name_input()
 
 
-func _render_narration() -> void:
+func _render_narration(reset := false) -> void:
 	narration_label.text = "\n".join(_page)
+	_narr_target = narration_label.get_total_character_count()
+	if reset or _narr_pos > float(_narr_target):
+		_narr_pos = 0.0
+	narration_label.visible_characters = int(_narr_pos)
+	_narr_typing = _narr_pos < float(_narr_target)
 
 
 ## True when the lines on the current page fit inside the visible area.
@@ -410,7 +419,7 @@ func _flip_page() -> void:
 	if _page.size() <= 1:
 		return
 	_page = PackedStringArray([_page[_page.size() - 1]])
-	_render_narration()
+	_render_narration(true)
 
 
 ## EVENT: a brief shake of the visible text areas.
@@ -646,6 +655,12 @@ func _clear_choices() -> void:
 
 
 func _process(delta: float) -> void:
+	if _narr_typing and narration_label.visible:
+		_narr_pos += NARR_CHARS_PER_SEC * delta
+		if _narr_pos >= float(_narr_target):
+			_narr_pos = float(_narr_target)
+			_narr_typing = false
+		narration_label.visible_characters = int(_narr_pos)
 	if not _revealing:
 		return
 	_char_timer += delta * CHARS_PER_SEC
@@ -691,8 +706,14 @@ func _unhandled_input(event: InputEvent) -> void:
 func _advance() -> void:
 	if name_panel.visible:
 		return
-	# Narration reveals one line per click and keeps accumulating across
-	# blocks; it only turns the page at the screen bottom or an "@ page".
+	# Narration types out letter by letter; a click finishes the line, and
+	# the next click adds the next line. It only turns the page at the
+	# screen bottom or an "@ page".
+	if narration_label.visible and _narr_typing:
+		_narr_pos = float(_narr_target)
+		narration_label.visible_characters = int(_narr_pos)
+		_narr_typing = false
+		return
 	if narration_label.visible and _narr_shown < _narr_lines.size():
 		_page.append(_narr_lines[_narr_shown])
 		_narr_shown += 1
