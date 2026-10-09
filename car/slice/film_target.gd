@@ -1,14 +1,18 @@
 extends Area3D
 class_name FilmTarget
-## A filmable ground obstacle. Two shapes:
-##   flat = false -> a block you must dodge
-##   flat = true  -> a low slab you can JUMP over
+## A filmable ground obstacle.
+##   flat = false -> a solid block you must dodge; can be shot apart (hp)
+##   flat = true  -> a low slab you can JUMP over (not solid)
 ## tier 1 -> yellow reticle.
 
 @export var type_name: String = "debris"
 @export var tier: int = 1
 @export var value: float = 1.0
 @export var flat: bool = false
+@export var hp: int = 3
+
+var _mat: StandardMaterial3D
+var _base_emission := Color(0.5, 0.08, 0.04)
 
 
 func _ready() -> void:
@@ -26,11 +30,11 @@ func _build() -> void:
 	var box := BoxMesh.new()
 	box.size = size
 	mesh.mesh = box
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.9, 0.22, 0.15)
-	mat.emission_enabled = true
-	mat.emission = Color(0.5, 0.08, 0.04)
-	mesh.material_override = mat
+	_mat = StandardMaterial3D.new()
+	_mat.albedo_color = Color(0.9, 0.22, 0.15)
+	_mat.emission_enabled = true
+	_mat.emission = _base_emission
+	mesh.material_override = _mat
 	add_child(mesh)
 
 	var cs := CollisionShape3D.new()
@@ -38,3 +42,13 @@ func _build() -> void:
 	sh.size = size
 	cs.shape = sh
 	add_child(cs)
+
+
+## Reduce HP and flash. Returns true when it should be destroyed.
+func take_hit() -> bool:
+	hp -= 1
+	if _mat != null:
+		_mat.emission = Color(1, 1, 1)
+		var tw := create_tween()
+		tw.tween_property(_mat, "emission", _base_emission, 0.15)
+	return hp <= 0

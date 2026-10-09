@@ -79,11 +79,13 @@ func _physics_process(delta: float) -> void:
 				continue   # low slabs are jumpable, not solid
 			if global_position.distance_to(o.global_position) < 2.6:
 				var at: Vector3 = o.global_position
-				o.queue_free()
-				var b := Blast.new()
-				get_parent().add_child(b)
-				b.global_position = at
+				var dead: bool = o.take_hit()
 				queue_free()
+				if dead:
+					o.queue_free()
+					var b := Blast.new()
+					get_parent().add_child(b)
+					b.global_position = at
 				return
 
 	if _runner != null and global_position.z > _runner.global_position.z + 25.0:
