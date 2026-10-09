@@ -164,9 +164,8 @@ func _physics_process(delta: float) -> void:
 		_grounded = true
 	position.y = _height
 
-	# --- duck: S, Q, or either side mouse button (top/rear thumb) ---
+	# --- duck: S, or either side mouse button (top/rear thumb) ---
 	ducking = Input.is_physical_key_pressed(KEY_S) \
-		or Input.is_physical_key_pressed(KEY_Q) \
 		or Input.is_mouse_button_pressed(MOUSE_BUTTON_XBUTTON1) \
 		or Input.is_mouse_button_pressed(MOUSE_BUTTON_XBUTTON2)
 	var target_y: float = duck_height if ducking else stand_height
