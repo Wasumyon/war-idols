@@ -82,9 +82,12 @@ func _build() -> void:
 	ball.height = 2.4
 	mesh.mesh = ball
 	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.75, 0.25, 0.9)
+	var base := _shot_color()
+	_base_albedo = base
+	_base_emission = base * 0.55
+	mat.albedo_color = _base_albedo
 	mat.emission_enabled = true
-	mat.emission = Color(0.35, 0.08, 0.5)
+	mat.emission = _base_emission
 	mesh.material_override = mat
 	_mat = mat
 	add_child(mesh)
@@ -214,6 +217,19 @@ func _set_flash(on: bool) -> void:
 		return
 	_mat.emission = Color(1, 1, 1) if on else _base_emission
 	_mat.albedo_color = Color(1, 1, 1) if on else _base_albedo
+
+
+## Body colour advertises this drone's munition, so you can read the threat.
+func _shot_color() -> Color:
+	match shot:
+		Shot.ORANGE:
+			return Color(1.0, 0.55, 0.1)
+		Shot.YELLOW:
+			return Color(1.0, 0.9, 0.2)
+		Shot.CYAN:
+			return Color(0.2, 1.0, 1.0)
+		_:
+			return Color(0.75, 0.25, 0.9)   # beam drone stays purple
 
 
 func _fire_beam() -> void:
