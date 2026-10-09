@@ -26,9 +26,9 @@ func _build() -> void:
 	ball.height = 4.4
 	mesh.mesh = ball
 	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(1.0, 0.6, 0.1)
+	mat.albedo_color = Color(0.2, 1.0, 1.0)
 	mat.emission_enabled = true
-	mat.emission = Color(1.0, 0.4, 0.05)
+	mat.emission = Color(0.1, 0.9, 0.9)
 	mesh.material_override = mat
 	add_child(mesh)
 
