@@ -1,6 +1,30 @@
-[gd_scene load_steps=2 format=3 uid="uid://b66cbg35jqemw"]
+[gd_scene load_steps=4 format=3 uid="uid://b66cbg35jqemw"]
 
 [ext_resource type="Script" uid="uid://dicdxrvgloxgw" path="res://vn/vn.gd" id="1_vn"]
+
+[sub_resource type="Shader" id="GlitchShader_1"]
+code = "shader_type canvas_item;
+uniform sampler2D screen_tex : hint_screen_texture, filter_linear;
+uniform float intensity : hint_range(0.0, 1.0) = 0.0;
+float hash(float x) { return fract(sin(x * 91.7) * 43758.5453); }
+void fragment() {
+	vec2 uv = SCREEN_UV;
+	float t = floor(TIME * 22.0);
+	float band = floor(uv.y * 22.0);
+	float n = hash(band * 1.37 + t);
+	uv.x += step(0.7, n) * (hash(band + t * 2.1) - 0.5) * 0.15 * intensity;
+	float s = 0.005 * intensity;
+	float r = texture(screen_tex, uv + vec2(s, 0.0)).r;
+	float g = texture(screen_tex, uv).g;
+	float b = texture(screen_tex, uv - vec2(s, 0.0)).b;
+	vec3 col = vec3(r, g, b);
+	col *= 1.0 - 0.3 * intensity * step(0.5, fract(uv.y * 160.0));
+	COLOR = vec4(col, intensity);
+}"
+
+[sub_resource type="ShaderMaterial" id="GlitchMat_1"]
+shader = SubResource("GlitchShader_1")
+shader_parameter/intensity = 0.0
 
 [node name="Vn" type="Control"]
 layout_mode = 3
@@ -131,3 +155,12 @@ placeholder_text = "Commander"
 [node name="Confirm" type="Button" parent="NamePanel/VBox"]
 layout_mode = 2
 text = "Confirm"
+
+[node name="Glitch" type="ColorRect" parent="."]
+material = SubResource("GlitchMat_1")
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2

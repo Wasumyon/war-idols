@@ -1,14 +1,12 @@
-[gd_scene format=3 uid="uid://c2gyvqy7rpg6k"]
+[gd_scene format=3 uid="uid://5fdqq21yajtr"]
 
 [ext_resource type="Script" uid="uid://dhcujkhfhdqtd" path="res://slice/slice.gd" id="1_slice"]
 [ext_resource type="Script" uid="uid://bclthao11g0l8" path="res://slice/runner.gd" id="2_runner"]
 [ext_resource type="Script" uid="uid://ca1nwr46f2xss" path="res://slice/reticle.gd" id="3_reticle"]
 [ext_resource type="Script" uid="uid://byxla2m4wkuct" path="res://slice/lane_spawner.gd" id="4_spawner"]
-[ext_resource type="Script" path="res://slice/backdrop.gd" id="5_backdrop"]
-[ext_resource type="Script" path="res://slice/backdrop_layer.gd" id="6_layer"]
+[ext_resource type="Script" uid="uid://c0cdwlxt2tcwe" path="res://slice/backdrop.gd" id="5_backdrop"]
+[ext_resource type="Script" uid="uid://krhoytlni01m" path="res://slice/backdrop_layer.gd" id="6_layer"]
 [ext_resource type="Script" uid="uid://bw0tsr24vini5" path="res://slice/cooldown_bubbles.gd" id="7_cooldowns"]
-[ext_resource type="Script" path="res://slice/lane_lines.gd" id="8_lanelines"]
-[ext_resource type="Script" path="res://slice/vehicle.gd" id="9_vehicle"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
 sky_horizon_color = Color(0.55, 0.53, 0.5, 1)
@@ -37,6 +35,12 @@ albedo_color = Color(0.16, 0.15, 0.14, 1)
 [sub_resource type="PlaneMesh" id="GroundMesh_1"]
 size = Vector2(200, 8000)
 
+[sub_resource type="StandardMaterial3D" id="LineMat_1"]
+albedo_color = Color(0.22, 0.22, 0.24, 1)
+
+[sub_resource type="BoxMesh" id="LineMesh_1"]
+size = Vector3(0.12, 0.02, 8000)
+
 [sub_resource type="StandardMaterial3D" id="BackSky_1"]
 shading_mode = 0
 disable_fog = true
@@ -59,6 +63,12 @@ albedo_color = Color(0.3, 0.29, 0.27, 1)
 shading_mode = 0
 disable_fog = true
 albedo_color = Color(0.18, 0.17, 0.16, 1)
+
+[sub_resource type="StandardMaterial3D" id="BodyMat_1"]
+albedo_color = Color(0.25, 0.45, 0.85, 1)
+
+[sub_resource type="BoxMesh" id="BodyMesh_1"]
+size = Vector3(2, 1.1, 4)
 
 [sub_resource type="StandardMaterial3D" id="StreamerMat_1"]
 albedo_color = Color(1, 0.2, 0.6, 1)
@@ -89,28 +99,45 @@ void fragment() {
 shader = SubResource("VigShader_1")
 shader_parameter/intensity = 0.3
 
-[node name="Slice" type="Node3D"]
+[node name="Slice" type="Node3D" unique_id=1839819756]
 script = ExtResource("1_slice")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1726073125]
 environment = SubResource("Env_1")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1050313576]
 transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
 shadow_enabled = true
 
-[node name="Ground" type="MeshInstance3D" parent="."]
+[node name="Ground" type="MeshInstance3D" parent="." unique_id=1561067356]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3600)
 material_override = SubResource("GroundMat_1")
 mesh = SubResource("GroundMesh_1")
 
-[node name="LaneLines" type="Node3D" parent="."]
-script = ExtResource("8_lanelines")
+[node name="LaneLine1" type="MeshInstance3D" parent="." unique_id=220709162]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.02, -3600)
+material_override = SubResource("LineMat_1")
+mesh = SubResource("LineMesh_1")
 
-[node name="Backdrop" type="Node3D" parent="."]
+[node name="LaneLine2" type="MeshInstance3D" parent="." unique_id=495538174]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.02, -3600)
+material_override = SubResource("LineMat_1")
+mesh = SubResource("LineMesh_1")
+
+[node name="LaneLine3" type="MeshInstance3D" parent="." unique_id=1467616301]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.02, -3600)
+material_override = SubResource("LineMat_1")
+mesh = SubResource("LineMesh_1")
+
+[node name="LaneLine4" type="MeshInstance3D" parent="." unique_id=1740437047]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.02, -3600)
+material_override = SubResource("LineMat_1")
+mesh = SubResource("LineMesh_1")
+
+[node name="Backdrop" type="Node3D" parent="." unique_id=1258257283]
 script = ExtResource("5_backdrop")
 
-[node name="Sky" type="MeshInstance3D" parent="Backdrop"]
+[node name="Sky" type="MeshInstance3D" parent="Backdrop" unique_id=1177401379]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 150, -420)
 material_override = SubResource("BackSky_1")
 cast_shadow = 0
@@ -118,14 +145,14 @@ mesh = SubResource("BackQuad_1")
 script = ExtResource("6_layer")
 forward_factor = 0.01
 
-[node name="Far" type="MeshInstance3D" parent="Backdrop"]
+[node name="Far" type="MeshInstance3D" parent="Backdrop" unique_id=1282038075]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 120, -340)
 material_override = SubResource("BackFar_1")
 cast_shadow = 0
 mesh = SubResource("BackQuad_1")
 script = ExtResource("6_layer")
 
-[node name="Mid" type="MeshInstance3D" parent="Backdrop"]
+[node name="Mid" type="MeshInstance3D" parent="Backdrop" unique_id=1072696172]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 90, -250)
 material_override = SubResource("BackMid_1")
 cast_shadow = 0
@@ -133,7 +160,7 @@ mesh = SubResource("BackQuad_1")
 script = ExtResource("6_layer")
 forward_factor = 0.035
 
-[node name="Near" type="MeshInstance3D" parent="Backdrop"]
+[node name="Near" type="MeshInstance3D" parent="Backdrop" unique_id=1409226471]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 60, -160)
 material_override = SubResource("BackNear_1")
 cast_shadow = 0
@@ -141,49 +168,51 @@ mesh = SubResource("BackQuad_1")
 script = ExtResource("6_layer")
 forward_factor = 0.06
 
-[node name="Runner" type="Node3D" parent="."]
+[node name="Runner" type="Node3D" parent="." unique_id=2062884188]
 script = ExtResource("2_runner")
 
-[node name="Body" type="Node3D" parent="Runner"]
-script = ExtResource("9_vehicle")
+[node name="Body" type="MeshInstance3D" parent="Runner" unique_id=30045553]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.55, 0)
+material_override = SubResource("BodyMat_1")
+mesh = SubResource("BodyMesh_1")
 
-[node name="Streamer" type="MeshInstance3D" parent="Runner"]
+[node name="Streamer" type="MeshInstance3D" parent="Runner" unique_id=776918307]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
 material_override = SubResource("StreamerMat_1")
 mesh = SubResource("StreamerMesh_1")
 
-[node name="Camera3D" type="Camera3D" parent="Runner"]
+[node name="Camera3D" type="Camera3D" parent="Runner" unique_id=347050318]
 transform = Transform3D(1, 0, 0, 0, 0.9982, -0.059964, 0, 0.059964, 0.9982, 0, 3.5, 7)
 fov = 78.0
 
-[node name="Hitbox" type="Area3D" parent="Runner"]
+[node name="Hitbox" type="Area3D" parent="Runner" unique_id=569868859]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Runner/Hitbox"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Runner/Hitbox" unique_id=371037276]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 0)
 shape = SubResource("HitboxShape_1")
 
-[node name="StreamHit" type="Area3D" parent="Runner"]
+[node name="StreamHit" type="Area3D" parent="Runner" unique_id=723653709]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Runner/StreamHit"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Runner/StreamHit" unique_id=1702314628]
 shape = SubResource("StreamHitShape_1")
 
-[node name="Spawner" type="Node3D" parent="."]
+[node name="Spawner" type="Node3D" parent="." unique_id=952038329]
 script = ExtResource("4_spawner")
 
-[node name="RunTimer" type="Timer" parent="."]
+[node name="RunTimer" type="Timer" parent="." unique_id=1299603668]
 one_shot = true
 
-[node name="HUD" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=597272951]
 
-[node name="Vignette" type="ColorRect" parent="HUD"]
+[node name="Vignette" type="ColorRect" parent="HUD" unique_id=1383249777]
 material = SubResource("VigMat_1")
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
 
-[node name="Reticle" type="Control" parent="HUD"]
+[node name="Reticle" type="Control" parent="HUD" unique_id=1088511839]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -193,21 +222,21 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("3_reticle")
 
-[node name="Points" type="Label" parent="HUD"]
+[node name="Points" type="Label" parent="HUD" unique_id=723903410]
 offset_left = 16.0
 offset_top = 12.0
 offset_right = 320.0
 offset_bottom = 40.0
 text = "Followers: 0"
 
-[node name="Money" type="Label" parent="HUD"]
+[node name="Money" type="Label" parent="HUD" unique_id=146564111]
 offset_left = 16.0
 offset_top = 44.0
 offset_right = 320.0
 offset_bottom = 72.0
 text = "$0"
 
-[node name="Shields" type="Label" parent="HUD"]
+[node name="Shields" type="Label" parent="HUD" unique_id=2121981730]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
@@ -218,7 +247,7 @@ offset_bottom = 40.0
 text = "Shields: 3"
 horizontal_alignment = 2
 
-[node name="Time" type="Label" parent="HUD"]
+[node name="Time" type="Label" parent="HUD" unique_id=1911557662]
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
@@ -229,7 +258,7 @@ offset_bottom = 40.0
 text = "01:30"
 horizontal_alignment = 1
 
-[node name="Speed" type="Label" parent="HUD"]
+[node name="Speed" type="Label" parent="HUD" unique_id=1918119237]
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -242,7 +271,7 @@ offset_bottom = -12.0
 text = "26 m/s"
 horizontal_alignment = 2
 
-[node name="Cooldowns" type="Control" parent="HUD"]
+[node name="Cooldowns" type="Control" parent="HUD" unique_id=1112276250]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -252,7 +281,7 @@ grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("7_cooldowns")
 
-[node name="SnapToast" type="Label" parent="HUD"]
+[node name="SnapToast" type="Label" parent="HUD" unique_id=1978349407]
 modulate = Color(1, 1, 1, 0)
 anchors_preset = 5
 anchor_left = 0.5

@@ -25,6 +25,7 @@ extends Control
 ##     @ sfx <name>              play vn/sfx/<name> (one-shot)
 ##     @ music <name>            swap looping music; "@ music stop"
 ##     @ shake                   brief shake of the text area
+##     @ glitch [seconds]        brief full-screen glitch (feed failing)
 ##     @ input_name              open the name-entry panel
 ##     @ call <scene>            hand off to another scene (not wired yet)
 ##
@@ -61,6 +62,7 @@ var _narr_shown := 0
 @onready var name_input: LineEdit = $NamePanel/VBox/NameInput
 @onready var sfx_player: AudioStreamPlayer = $Sfx
 @onready var music_player: AudioStreamPlayer = $Music
+@onready var glitch: ColorRect = $Glitch
 
 
 func _ready() -> void:
@@ -262,6 +264,9 @@ func _goto(id: String) -> void:
 	_handle_audio(node)
 	if _has_staging(node, "shake"):
 		_shake()
+	if _has_staging(node, "glitch"):
+		var ga := _staging_arg(node, "glitch")
+		_start_glitch(float(ga) if ga != "" else 0.4)
 
 	_clear_choices()
 	hint.text = ""
@@ -358,6 +363,26 @@ func _has_staging(node: Dictionary, verb: String) -> bool:
 		if parts.size() >= 1 and parts[0] == verb:
 			return true
 	return false
+
+
+func _staging_arg(node: Dictionary, verb: String) -> String:
+	for d in node.get("staging", []):
+		var parts := str(d).split(" ", true, 1)
+		if str(parts[0]) == verb:
+			return str(parts[1]).strip_edges() if parts.size() > 1 else ""
+	return ""
+
+
+## EVENT: a brief screen glitch - distorts the whole frame (feed failing).
+func _start_glitch(duration: float) -> void:
+	if glitch == null or glitch.material == null:
+		return
+	var tw := create_tween()
+	tw.tween_method(_set_glitch, 1.0, 0.0, duration)
+
+
+func _set_glitch(v: float) -> void:
+	glitch.material.set_shader_parameter("intensity", v)
 
 
 ## Plays any @ sfx / @ music directives attached to this line.
