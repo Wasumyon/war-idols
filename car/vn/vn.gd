@@ -47,7 +47,7 @@ extends Control
 ## A line is dialogue ONLY if the text before the first ":" is one word.
 ## So "Chip: hi" is dialogue, but "Our contract: split 50/50" is narration.
 ##
-## In NARRATION:
+## In narration AND dialogue:
 ##   blank line  = a paragraph gap (an empty line on screen)
 ##   "|"         = an extra click: the typewriter pauses there, but the
 ##                 text keeps rendering on the same line  (a|b -> "a b")
@@ -73,6 +73,8 @@ var _node_id := ""
 var _revealing := false
 var _char_timer := 0.0
 var _char_count := 0
+var _dlg_stops: Array[int] = []   # dialogue: visible-char count at each segment end
+var _dlg_seg := 0                 # dialogue: current segment
 var _narr_pos := 0.0       # narration typewriter cursor (visible chars)
 var _narr_target := 0      # total chars in the current narration page
 var _narr_typing := false
@@ -388,6 +390,8 @@ func _goto(id: String, keep_page := false) -> void:
 		if not _narration_fits():
 			_flip_page()
 		_revealing = false
+		_dlg_stops = []
+		_dlg_seg = 0
 		_present_choices()
 	else:
 		_page = []
@@ -395,11 +399,7 @@ func _goto(id: String, keep_page := false) -> void:
 		box.visible = true
 		portrait.visible = true
 		name_label.text = _speaker_name(node)
-		text_label.text = body
-		text_label.visible_characters = 0
-		_char_count = text_label.get_total_character_count()
-		_char_timer = 0.0
-		_revealing = true
+		_setup_dialogue(body)
 
 	if _has_staging(node, "input_name"):
 		_show_name_input()
@@ -415,6 +415,48 @@ func _split_units(body: String) -> Array:
 		for i in segs.size():
 			units.append({"t": str(segs[i]).strip_edges(), "b": i == 0})
 	return units
+
+
+## Dialogue supports the same "|" pause marks: the text renders on one line
+## ("a|b" -> "a b"), but the typewriter stops at each "|".
+func _setup_dialogue(body: String) -> void:
+	var segs: Array = []
+	for part in body.split("|"):
+		segs.append(str(part).strip_edges())
+	var joined := PackedStringArray()
+	for s in segs:
+		joined.append(str(s))
+	text_label.text = " ".join(joined)
+	_dlg_stops = []
+	var vis := 0
+	for i in segs.size():
+		if i > 0:
+			vis += 1
+		vis += _visible_len(str(segs[i]))
+		_dlg_stops.append(vis)
+	_dlg_seg = 0
+	_char_count = vis
+	_char_timer = 0.0
+	text_label.visible_characters = 0
+	_revealing = vis > 0
+	if not _revealing:
+		_present_choices()
+
+
+## Visible character count (BBCode tags excluded) - matches how
+## RichTextLabel.visible_characters counts.
+func _visible_len(s: String) -> int:
+	var n := 0
+	var in_tag := false
+	for i in s.length():
+		var code := s.unicode_at(i)
+		if code == 91:        # [
+			in_tag = true
+		elif code == 93:      # ]
+			in_tag = false
+		elif not in_tag:
+			n += 1
+	return n
 
 
 ## The visible page as one string: new-line units follow a "\n", pause
@@ -693,12 +735,17 @@ func _process(delta: float) -> void:
 		narration_label.visible_characters = int(_narr_pos)
 	if not _revealing:
 		return
+	var stop: int = _dlg_stops[_dlg_seg] if _dlg_seg < _dlg_stops.size() else 0
 	_char_timer += delta * CHARS_PER_SEC
-	text_label.visible_characters = int(_char_timer)
-	if text_label.visible_characters >= _char_count:
-		text_label.visible_characters = -1
+	if int(_char_timer) >= stop:
+		_char_timer = float(stop)
+		text_label.visible_characters = stop
 		_revealing = false
-		_present_choices()
+		if _dlg_seg + 1 >= _dlg_stops.size():
+			_present_choices()
+		# else: paused at a "|" - wait for a click
+	else:
+		text_label.visible_characters = int(_char_timer)
 
 
 func _present_choices() -> void:
@@ -752,9 +799,16 @@ func _advance() -> void:
 			_flip_page()
 		return
 	if _revealing:
-		text_label.visible_characters = -1
+		var stop: int = _dlg_stops[_dlg_seg] if _dlg_seg < _dlg_stops.size() else 0
+		_char_timer = float(stop)
+		text_label.visible_characters = stop
 		_revealing = false
-		_present_choices()
+		if _dlg_seg + 1 >= _dlg_stops.size():
+			_present_choices()
+		return
+	if box.visible and _dlg_seg + 1 < _dlg_stops.size():
+		_dlg_seg += 1
+		_revealing = true
 		return
 	var node: Dictionary = _nodes["nodes"][_node_id]
 	if node.has("choices") and not node["choices"].is_empty():
