@@ -11,8 +11,6 @@ extends Node3D
 ## Modifier keys bound as actions frequently fail to match, because the event
 ## arrives with its own modifier flag set (shift_pressed / ctrl_pressed).
 
-@export var lane_count := 5
-@export var lane_width := 4.0
 @export var base_speed := 26.0
 @export var boost_speed := 44.0
 @export var slow_speed := 14.0
@@ -55,7 +53,7 @@ func _ready() -> void:
 	add_to_group("runner")
 	_ensure_jump_action()
 	_build_dash_fx()
-	lane = lane_count / 2
+	lane = Game.lane_count / 2
 	position.x = lane_x(lane)
 	$Hitbox.area_entered.connect(_on_area_entered)
 	$StreamHit.area_entered.connect(_on_stream_hit)
@@ -107,7 +105,7 @@ func _build_dash_fx() -> void:
 
 
 func lane_x(index: int) -> float:
-	return (index - (lane_count - 1) / 2.0) * lane_width
+	return Game.lane_x(index)
 
 
 ## Blink the car + streamer for `t` seconds (called on a hit).
@@ -125,7 +123,7 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("turnLeft"):
 		lane = max(0, lane - 1)
 	if Input.is_action_just_pressed("turnRight"):
-		lane = min(lane_count - 1, lane + 1)
+		lane = min(Game.lane_count - 1, lane + 1)
 	position.x = lerp(position.x, lane_x(lane), clamp(strafe_rate * delta, 0.0, 1.0))
 
 	# --- dash (physical key: modifier actions are unreliable) ---

@@ -22,6 +22,14 @@ var flags := {}
 ## Until then, Chip's nickname "Blockhead" is used.
 var player_name := ""
 
+## Lane geometry - the single source of truth for movement AND spawning.
+var lane_count := 5
+var lane_width := 4.0
+
+
+func lane_x(index: int) -> float:
+	return (index - (lane_count - 1) / 2.0) * lane_width
+
 
 func display_name() -> String:
 	var n := player_name.strip_edges()

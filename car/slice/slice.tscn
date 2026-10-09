@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://c2gyvqy7rpg6k"]
+[gd_scene load_steps=27 format=3 uid="uid://c2gyvqy7rpg6k"]
 
 [ext_resource type="Script" uid="uid://dhcujkhfhdqtd" path="res://slice/slice.gd" id="1_slice"]
 [ext_resource type="Script" uid="uid://bclthao11g0l8" path="res://slice/runner.gd" id="2_runner"]
@@ -7,6 +7,7 @@
 [ext_resource type="Script" path="res://slice/backdrop.gd" id="5_backdrop"]
 [ext_resource type="Script" path="res://slice/backdrop_layer.gd" id="6_layer"]
 [ext_resource type="Script" uid="uid://bw0tsr24vini5" path="res://slice/cooldown_bubbles.gd" id="7_cooldowns"]
+[ext_resource type="Script" path="res://slice/lane_lines.gd" id="8_lanelines"]
 
 [sub_resource type="ProceduralSkyMaterial" id="SkyMat_1"]
 sky_horizon_color = Color(0.55, 0.53, 0.5, 1)
@@ -34,12 +35,6 @@ albedo_color = Color(0.16, 0.15, 0.14, 1)
 
 [sub_resource type="PlaneMesh" id="GroundMesh_1"]
 size = Vector2(200, 8000)
-
-[sub_resource type="StandardMaterial3D" id="LineMat_1"]
-albedo_color = Color(0.22, 0.22, 0.24, 1)
-
-[sub_resource type="BoxMesh" id="LineMesh_1"]
-size = Vector3(0.12, 0.02, 8000)
 
 [sub_resource type="StandardMaterial3D" id="BackSky_1"]
 shading_mode = 0
@@ -114,25 +109,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3600)
 material_override = SubResource("GroundMat_1")
 mesh = SubResource("GroundMesh_1")
 
-[node name="LaneLine1" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 0.02, -3600)
-material_override = SubResource("LineMat_1")
-mesh = SubResource("LineMesh_1")
-
-[node name="LaneLine2" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.02, -3600)
-material_override = SubResource("LineMat_1")
-mesh = SubResource("LineMesh_1")
-
-[node name="LaneLine3" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.02, -3600)
-material_override = SubResource("LineMat_1")
-mesh = SubResource("LineMesh_1")
-
-[node name="LaneLine4" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.02, -3600)
-material_override = SubResource("LineMat_1")
-mesh = SubResource("LineMesh_1")
+[node name="LaneLines" type="Node3D" parent="."]
+script = ExtResource("8_lanelines")
 
 [node name="Backdrop" type="Node3D" parent="."]
 script = ExtResource("5_backdrop")

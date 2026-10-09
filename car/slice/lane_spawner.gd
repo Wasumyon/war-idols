@@ -11,9 +11,6 @@ class_name LaneSpawner
 ##  BATTLE (every battle_interval): a cluster of side battles, far outside the
 ##         lane corridor.
 
-@export var lane_count := 5
-@export var lane_width := 4.0
-
 # --- ground layer ---
 @export var spawn_ahead := 150.0
 @export var row_spacing := 20.0
@@ -59,7 +56,7 @@ func _ready() -> void:
 
 
 func lane_x(index: int) -> float:
-	return (index - (lane_count - 1) / 2.0) * lane_width
+	return Game.lane_x(index)
 
 
 func _process(delta: float) -> void:
@@ -115,7 +112,7 @@ func _spawn_row(z: float) -> void:
 
 	var lane := _pick_lane()
 	if lane == _last_lane:
-		lane = (lane + 1) % lane_count
+		lane = (lane + 1) % Game.lane_count
 	_last_lane = lane
 
 	if randf() < emitter_chance and abs(z - _last_emitter_z) >= emitter_min_gap:
@@ -192,4 +189,4 @@ func _pick_lane() -> int:
 		r -= lane_weights[i]
 		if r <= 0.0:
 			return i
-	return lane_count / 2
+	return Game.lane_count / 2
