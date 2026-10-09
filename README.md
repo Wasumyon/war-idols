@@ -18,7 +18,7 @@ Design and prototype repository. A war-journalism story set on Io, and a
 
 ## Running the prototype
 
-1. Install **Godot 4.4.x** (standard build, no .NET needed).
+1. Install **Godot 4.7.x** (standard build, no .NET needed).
 2. Import `car/project.godot`.
 3. Open `car/slice.tscn` and press **F6** (run current scene).
 
