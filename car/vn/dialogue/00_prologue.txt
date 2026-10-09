@@ -73,7 +73,7 @@ Good.
 
 # ART: black
 @ img black
-Visor down again. The screams cut out, replaced with my own as I hack into the darkness.
+Visor down. The screams cut out, replaced with my own as I hack at the darkness.
 
 @ glitch
 The backup camera feed kicks in — glitched — showing the surroundings through a storm of artifacts. 
