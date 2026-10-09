@@ -42,6 +42,7 @@ func set_player_name(raw: String) -> void:
 
 ## Story order. The VN walks these; add scenes here as you write them.
 var chapters: Array[String] = [
+	"res://vn/dialogue/00_prologue.txt",
 	"res://vn/dialogue/01_intro.txt",
 	"res://vn/dialogue/02_stream.txt",
 	"res://vn/dialogue/03_car.txt",

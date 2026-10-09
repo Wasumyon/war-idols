@@ -1,0 +1,58 @@
+# War Idols - 00_prologue
+#
+# First-person present. Full-screen narration: one line per click, no speaker,
+# no text box. The player is rescued/medically discharged AFTER this; nothing
+# here is a death scene (the flatline is an effect, not an ending).
+#
+# Illustrations live in res://vn/img/ - see "# ART:" notes for what to draw.
+#   @ narration       this scene is unattributed full-screen prose
+#   @ img <name>      swap the full-screen illustration (res://vn/img/<name>.png)
+#   @ zoom <factor>   zoom the illustration (@ zoom 1 resets)
+#   @ shake / @ sfx <name> / @ glitch / @ page
+#   @ preset / @ tremble   (defined just below)
+
+@ narration
+@ preset tremble = shake + zoom 1.15 + sfx shuffle
+
+# ART: black opens on a severed leg in power armour, pool of blood, yellow-green soil
+@ img leg_pool
+My leg. It shouldn’t be there.
+
+# ART: a gauntleted arm crawling across the soil toward the leg
+@ img arm_crawl
+My arm comes into view. It’s still working.
+
+# ART: (same frame, tighter) the pull at the dirt
+@ tremble
+I grab at the toxic dirt and pull. Only a little… more.
+
+@ tremble
+I was prepared to give my life up for my comrades. But… not my leg.
+
+@ tremble
+I can still fight… I’m not going to let them take my home away. My dad fought for it, and his dad fought for it, and I’m sure his dad did too.
+
+@ tremble
+I can hear it again. The suit coms are running again. Screams. Shouts. Swears. Orders from hundreds of miles away.
+
+# ART: a hand closing on the severed leg
+@ img grab_leg
+@ sfx squish
+I have it now! I can fight again. Just gotta… put it back on.
+
+# ART: a taloned heel stomping down on the arm
+@ img stomp
+You damned bugs…
+
+@ sfx knife
+I reach for the strap on my belt for the nanoknife and jam it into the insectoid’s disgusting tarsus. A blow against my helmet and all is black.
+
+# ART: black
+@ img black
+Visor down again. The screams cut out, replaced with my own as I hack into the darkness.
+
+@ glitch
+The back up camera feed kicks in but glitched and showing the surroundings through a storm of artefacts. I hear a man cry for his momma. And I see… Wait, that’s not right. You’re not…
+
+@ sfx blow
+@ sfx flatline

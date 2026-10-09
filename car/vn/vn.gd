@@ -29,8 +29,17 @@ extends Control
 ##     @ shake                   brief shake of the text area
 ##     @ glitch [seconds]        brief full-screen glitch (feed failing)
 ##     @ page                    start a new page (break the narration block)
+##     @ img <name>              swap the full-screen illustration (sticky)
+##                               files live in res://vn/img/<name>.png|webp|jpg
+##                               "@ img none" clears it
+##     @ zoom <factor>           zoom the illustration; "@ zoom 1" resets
 ##     @ input_name              open the name-entry panel
 ##     @ call <scene>            hand off to another scene (not wired yet)
+##
+##   PRESETS - name a bundle of effects once, then reuse the name in this scene.
+##     @ preset tremble = shake + zoom 1.15 + sfx shuffle
+##     @ tremble                 (same as writing all three effects)
+##   Presets are per-file. Define them near the top; order does not matter.
 ##
 ## A line is dialogue ONLY if the text before the first ":" is one word.
 ## So "Chip: hi" is dialogue, but "Our contract: split 50/50" is narration.
@@ -42,6 +51,8 @@ const CHARS_PER_SEC := 45.0
 const SFX_DIR := "res://vn/sfx/"
 const SFX_EXTS := ["ogg", "wav", "mp3"]
 const MODE_VERBS := ["fullscreen", "narration", "box", "center", "right", "small", "large"]
+const IMG_DIR := "res://vn/img/"
+const IMG_EXTS := ["png", "webp", "jpg", "jpeg"]
 
 ## Leave blank to play through Game.chapters in order; set a path to test one file.
 @export var chapter_file := ""
@@ -54,6 +65,8 @@ var _char_count := 0
 var _narr_lines := PackedStringArray()
 var _narr_shown := 0
 var _narr_page_start := 0   # index of the first line on the current page
+var _fade_tween: Tween
+var _zoom_tween: Tween
 
 @onready var box: ColorRect = $Box
 @onready var portrait: TextureRect = $Portrait
@@ -67,6 +80,7 @@ var _narr_page_start := 0   # index of the first line on the current page
 @onready var sfx_player: AudioStreamPlayer = $Sfx
 @onready var music_player: AudioStreamPlayer = $Music
 @onready var glitch: ColorRect = $Glitch
+@onready var bg_image: TextureRect = $BgImage
 
 
 func _ready() -> void:
@@ -99,6 +113,30 @@ func _parse(text: String) -> void:
 	var cur = null
 	var last_choice = null
 
+	# Presets: "@ preset name = fx + fx" defines a nickname for this scene.
+	# Collected up front so order within the file does not matter.
+	var presets := {}
+	for raw in text.split("\n"):
+		var pl: String = str(raw).strip_edges()
+		if not pl.begins_with("@"):
+			continue
+		var pd := pl.substr(1).strip_edges()
+		var pdp := pd.split(" ", true, 1)
+		if str(pdp[0]) != "preset" or pdp.size() < 2:
+			continue
+		var spec := str(pdp[1])
+		var eq := spec.find("=")
+		if eq <= 0:
+			continue
+		var pname := spec.substr(0, eq).strip_edges()
+		var fx: Array = []
+		for part in spec.substr(eq + 1).split("+"):
+			var t := str(part).strip_edges()
+			if t != "":
+				fx.append(t)
+		if pname != "":
+			presets[pname] = fx
+
 	for raw in text.split("\n"):
 		var line: String = raw.strip_edges()
 		if line == "" or line.begins_with("#"):
@@ -116,9 +154,14 @@ func _parse(text: String) -> void:
 			var arg := str(dp[1]).strip_edges() if dp.size() > 1 else ""
 			if verb == "page":
 				pending_page = true
+			elif verb == "preset":
+				pass   # definitions were collected above
 			elif MODE_VERBS.has(verb):
 				_apply_mode(modes, verb, arg)
 				pending_mode = true
+			elif presets.has(verb):
+				for fx in presets[verb]:
+					pending_staging.append(str(fx))
 			else:
 				pending_staging.append(d)
 			continue
@@ -275,6 +318,12 @@ func _goto(id: String) -> void:
 	if _has_staging(node, "glitch"):
 		var ga := _staging_arg(node, "glitch")
 		_start_glitch(float(ga) if ga != "" else 0.4)
+	var iv := "img" if _has_staging(node, "img") else ("image" if _has_staging(node, "image") else "")
+	if iv != "":
+		_set_image(_staging_arg(node, iv))
+	if _has_staging(node, "zoom"):
+		var zv := _staging_arg(node, "zoom")
+		_zoom(float(zv) if zv != "" else 1.1)
 
 	_clear_choices()
 	hint.text = ""
@@ -414,6 +463,57 @@ func _start_glitch(duration: float) -> void:
 
 func _set_glitch(v: float) -> void:
 	glitch.material.set_shader_parameter("intensity", v)
+
+
+func _load_texture(name: String) -> Texture2D:
+	if name == "":
+		return null
+	if name.begins_with("res://"):
+		return load(name) as Texture2D
+	for ext in IMG_EXTS:
+		var p := "%s%s.%s" % [IMG_DIR, name, ext]
+		if ResourceLoader.exists(p):
+			return load(p) as Texture2D
+	return null
+
+
+## EVENT (sticky): swap the full-screen illustration behind the text.
+func _set_image(name: String) -> void:
+	if name == "" or name == "none" or name == "off":
+		if _fade_tween != null and _fade_tween.is_valid():
+			_fade_tween.kill()
+		if _zoom_tween != null and _zoom_tween.is_valid():
+			_zoom_tween.kill()
+		bg_image.texture = null
+		bg_image.scale = Vector2.ONE
+		bg_image.modulate.a = 1.0
+		return
+	var tex := _load_texture(name)
+	if tex == null:
+		push_warning("VN: missing image '%s' (expected %s%s.png|webp|jpg)" % [name, IMG_DIR, name])
+		return
+	if _fade_tween != null and _fade_tween.is_valid():
+		_fade_tween.kill()
+	if _zoom_tween != null and _zoom_tween.is_valid():
+		_zoom_tween.kill()
+	bg_image.texture = tex
+	bg_image.pivot_offset = bg_image.size * 0.5
+	bg_image.scale = Vector2.ONE
+	bg_image.modulate.a = 0.0
+	_fade_tween = create_tween()
+	_fade_tween.tween_property(bg_image, "modulate:a", 1.0, 0.25)
+
+
+## EVENT: zoom the illustration. "@ zoom 1.15" (factor, default 1.1). "@ zoom 1" resets.
+func _zoom(factor: float) -> void:
+	if bg_image.texture == null:
+		return
+	bg_image.pivot_offset = bg_image.size * 0.5
+	# Zoom around the centre of the frame, not the top-left corner.
+	if _zoom_tween != null and _zoom_tween.is_valid():
+		_zoom_tween.kill()
+	_zoom_tween = create_tween()
+	_zoom_tween.tween_property(bg_image, "scale", Vector2(factor, factor), 0.35)
 
 
 ## Plays any @ sfx / @ music directives attached to this line.
