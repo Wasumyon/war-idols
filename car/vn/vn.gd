@@ -69,7 +69,7 @@ var _char_timer := 0.0
 var _char_count := 0
 var _narr_lines := PackedStringArray()
 var _narr_shown := 0
-var _narr_page_start := 0   # index of the first line on the current page
+var _page := PackedStringArray()   # lines currently visible on the narration page
 var _img_fade_tween: Tween
 var _screen_fade_tween: Tween
 var _zoom_tween: Tween
@@ -232,6 +232,7 @@ func _parse(text: String) -> void:
 				"choices": [],
 				"next_label": "",
 				"force_end": false,
+				"page_break": pending_page,
 				"staging": pending_staging.duplicate(),
 			}
 			pending_label = ""
@@ -261,6 +262,7 @@ func _parse(text: String) -> void:
 			"modes": b["modes"],
 			"effects": b["effects"],
 			"staging": b["staging"],
+			"page_break": b["page_break"],
 			"next": _resolve(str(b["next_label"]), bool(b["force_end"]), i, blocks, labels),
 			"choices": [],
 		}
@@ -314,7 +316,7 @@ func _resolve(label: String, force_end: bool, index: int, blocks: Array, labels:
 # ---------------------------------------------------------------------------
 # Runtime
 # ---------------------------------------------------------------------------
-func _goto(id: String) -> void:
+func _goto(id: String, keep_page := false) -> void:
 	if id == "" or not _nodes.get("nodes", {}).has(id):
 		_finish()
 		return
@@ -356,13 +358,21 @@ func _goto(id: String) -> void:
 		box.visible = false
 		portrait.visible = false
 		narration_label.visible = true
+		if bool(node.get("page_break", false)):
+			keep_page = false
 		_narr_lines = body.split("\n")
 		_narr_shown = 1 if _narr_lines.size() > 0 else 0
-		_narr_page_start = 0
+		if not keep_page:
+			_page = PackedStringArray()
+		if _narr_lines.size() > 0:
+			_page.append(_narr_lines[0])
 		_render_narration()
+		if not _narration_fits():
+			_flip_page()
 		_revealing = false
 		_present_choices()
 	else:
+		_page = PackedStringArray()
 		narration_label.visible = false
 		box.visible = true
 		portrait.visible = true
@@ -378,10 +388,7 @@ func _goto(id: String) -> void:
 
 
 func _render_narration() -> void:
-	var out := PackedStringArray()
-	for i in range(_narr_page_start, _narr_shown):
-		out.append(_narr_lines[i])
-	narration_label.text = "\n".join(out)
+	narration_label.text = "\n".join(_page)
 
 
 ## True when the lines on the current page fit inside the visible area.
@@ -389,21 +396,12 @@ func _narration_fits() -> bool:
 	return narration_label.size.y <= 0.0 or narration_label.get_content_height() <= narration_label.size.y
 
 
-## The just-revealed line made the page overflow. Rather than scroll or clip,
-## start a fresh page ending at the newest line - keeping the previous line
-## too when it still fits, so the transition has one line of context.
-func _reflow_narration_page() -> void:
-	var newest := _narr_shown - 1
-	if newest < 0:
+## The just-added line made the page overflow: flip to a fresh page on it.
+func _flip_page() -> void:
+	if _page.size() <= 1:
 		return
-	_narr_page_start = newest
+	_page = PackedStringArray([_page[_page.size() - 1]])
 	_render_narration()
-	if newest - 1 >= 0:
-		_narr_page_start = newest - 1
-		_render_narration()
-		if not _narration_fits():
-			_narr_page_start = newest
-			_render_narration()
 
 
 ## EVENT: a brief shake of the visible text areas.
@@ -684,13 +682,14 @@ func _unhandled_input(event: InputEvent) -> void:
 func _advance() -> void:
 	if name_panel.visible:
 		return
-	# Narration reveals one line per click; when a page would overflow it
-	# flushes to a fresh page instead of scrolling or clipping.
+	# Narration reveals one line per click and keeps accumulating across
+	# blocks; it only turns the page at the screen bottom or an "@ page".
 	if narration_label.visible and _narr_shown < _narr_lines.size():
+		_page.append(_narr_lines[_narr_shown])
 		_narr_shown += 1
 		_render_narration()
 		if not _narration_fits():
-			_reflow_narration_page()
+			_flip_page()
 		return
 	if _revealing:
 		text_label.visible_characters = -1
@@ -704,7 +703,7 @@ func _advance() -> void:
 	if nxt == "":
 		_finish()
 	else:
-		_goto(nxt)
+		_goto(nxt, true)
 
 
 func _finish() -> void:
