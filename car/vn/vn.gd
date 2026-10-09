@@ -51,6 +51,7 @@ const CHARS_PER_SEC := 45.0
 const SFX_DIR := "res://vn/sfx/"
 const SFX_EXTS := ["ogg", "wav", "mp3"]
 const MODE_VERBS := ["fullscreen", "narration", "box", "center", "right", "small", "large"]
+const EVENT_VERBS := ["stage", "sfx", "music", "shake", "glitch", "page", "img", "image", "zoom", "input_name", "call"]
 const IMG_DIR := "res://vn/img/"
 const IMG_EXTS := ["png", "webp", "jpg", "jpeg"]
 
@@ -159,7 +160,7 @@ func _parse(text: String) -> void:
 			elif MODE_VERBS.has(verb):
 				_apply_mode(modes, verb, arg)
 				pending_mode = true
-			elif presets.has(verb):
+			elif presets.has(verb) and not EVENT_VERBS.has(verb):
 				for fx in presets[verb]:
 					pending_staging.append(str(fx))
 			else:
