@@ -19,7 +19,7 @@ extends Control
 ##     @ right  / @ right off
 ##     @ small  / @ small off
 ##     @ large  / @ large off
-##     @ narration / @ narration off   (alias of @ fullscreen: page-based
+##     @ narration / @ narration off   (alias of @ fullscreen: line-by-line
 ##                                      prose, no text box, no name)
 ##
 ##   EVENT (ONE-SHOT) - happens on the line it is attached to, then gone.
@@ -53,6 +53,7 @@ var _char_timer := 0.0
 var _char_count := 0
 var _narr_lines := PackedStringArray()
 var _narr_shown := 0
+var _narr_page_start := 0   # index of the first line on the current page
 
 @onready var box: ColorRect = $Box
 @onready var portrait: TextureRect = $Portrait
@@ -292,7 +293,8 @@ func _goto(id: String) -> void:
 		portrait.visible = false
 		narration_label.visible = true
 		_narr_lines = body.split("\n")
-		_narr_shown = _narr_lines.size()   # the whole page shows at once
+		_narr_shown = 1 if _narr_lines.size() > 0 else 0
+		_narr_page_start = 0
 		_render_narration()
 		_revealing = false
 		_present_choices()
@@ -313,9 +315,31 @@ func _goto(id: String) -> void:
 
 func _render_narration() -> void:
 	var out := PackedStringArray()
-	for i in _narr_shown:
+	for i in range(_narr_page_start, _narr_shown):
 		out.append(_narr_lines[i])
 	narration_label.text = "\n".join(out)
+
+
+## True when the lines on the current page fit inside the visible area.
+func _narration_fits() -> bool:
+	return narration_label.size.y <= 0.0 or narration_label.get_content_height() <= narration_label.size.y
+
+
+## The just-revealed line made the page overflow. Rather than scroll or clip,
+## start a fresh page ending at the newest line - keeping the previous line
+## too when it still fits, so the transition has one line of context.
+func _reflow_narration_page() -> void:
+	var newest := _narr_shown - 1
+	if newest < 0:
+		return
+	_narr_page_start = newest
+	_render_narration()
+	if newest - 1 >= 0:
+		_narr_page_start = newest - 1
+		_render_narration()
+		if not _narration_fits():
+			_narr_page_start = newest
+			_render_narration()
 
 
 ## EVENT: a brief shake of the visible text areas.
@@ -511,6 +535,14 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _advance() -> void:
 	if name_panel.visible:
+		return
+	# Narration reveals one line per click; when a page would overflow it
+	# flushes to a fresh page instead of scrolling or clipping.
+	if narration_label.visible and _narr_shown < _narr_lines.size():
+		_narr_shown += 1
+		_render_narration()
+		if not _narration_fits():
+			_reflow_narration_page()
 		return
 	if _revealing:
 		text_label.visible_characters = -1
