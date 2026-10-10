@@ -74,7 +74,7 @@ A broken soldier in a dead market is a commodity with no buyers. I found the gut
 # [[ NOTE: "Player:" shows "Blockhead" until the name is entered (later, in 03_car). ]]
 @ box
 
-# ART: The Spill - a low dive, one light, benches; Chip - bright, broke, over-accessorised; a selfie stick and a dead SubHub
+# ART: Keno's - a low dive, one light, benches; Chip - bright, broke, over-accessorised; a selfie stick and a dead SubHub
 Chip: So was it loud? Like, actually loud, or do you just stop noticing? Is it true the front smells like that? Have you killed anyone *interesting*?
 # [[ she PRIES - the audience's proxy. she wants content, and he's a source. ]]
 Player: You've got no gun, no sense, and no muscle. What are you doing out here?
@@ -112,22 +112,23 @@ She said it like a word she meant to keep.
 
 Then she was up and gone - phone raised, already filming the door.
 
-I turned to settle with the bartender. The Spill never overcharged - that was the whole trick of the place, the reason the whole gutter drank here - and the man behind it still shook his head.
-Bartender: She covered it.
+I turned to settle with the man behind the bar - Captain Keno, though nobody had called him anything but Keno in years. They'd named the place after him so long ago the old name was gone; the gutter just said *Keno's* and everyone knew where to go.
+Keno's never overcharged. That was the whole trick of it, the reason the whole gutter drank here. And he still shook his head.
+Keno: She covered it.
 
 # [[ the pride jolt. small, human, funny. ]]
 I caught her at the door, phone turned toward me - the payment screen still lit, *paid, paid, paid* - and a little wave, like she'd won something.
 
 I put my chips down anyway. The old kind. The ones that weigh. I put down more than the round was worth, because that's the only way a man like me knows how to say a thing without saying it.
-Bartender: That's too much.
+Keno: That's too much.
 Player: Then the next one's on me.
 
-# [[ RUNNING GAG: the barkeep ALWAYS gets overpaid. Over the story he quietly grows rich - and
-#    spends it: free food, no gouging, the one soft place in the war. The bar recurs as the
-#    interview hub. ]]
-# [[ BAR NAME - suggestions: "The Spill" (the overflow that gets given back) /
-#    "The Vent" (Io's volcanism + where people let off steam) / "The Mess" (communal,
-#    free food, a dive) / "Ma's". Swap freely. ]]
+# [[ RUNNING GAG: the barkeep (Captain Keno) ALWAYS gets overpaid. Over the story he quietly grows
+#    rich - and spends it: free food, no gouging, the one soft place in the war. Keno's recurs as
+#    the interview hub. ]]
+# [[ SPEAKER LABEL: the parser makes a line dialogue only if the name before ":" is ONE word,
+#    so the label is "Keno:" (displays "Keno"), while the prose calls him "Captain Keno."
+#    If you want "Captain Keno:" as a label, I need to add a cast-name list - say the word. ]]
 
 Player: Hey-
 The door was already closing.
