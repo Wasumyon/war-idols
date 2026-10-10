@@ -46,8 +46,11 @@ extends Control
 ##
 ##   CAST - whitelist speaker names so multi-word names read as dialogue
 ##   ("Captain Keno: ..."), while "Our contract: 50/50" stays narration.
-##     @ cast Captain Keno, Ottenok
+##   Short forms map a letter to a name:
+##     @ cast Captain Keno, C=Chip, P=Player
 ##   (A single word before ":" is always treated as a speaker anyway.)
+##
+##   INLINE: *bold* -> [b]bold[/b],  _italic_ -> [i]italic[/i]
 ##
 ## A line is dialogue ONLY if the text before the first ":" is one word.
 ## So "Chip: hi" is dialogue, but "Our contract: split 50/50" is narration.
@@ -176,7 +179,15 @@ func _parse(text: String) -> void:
 			continue
 		for nm in str(cdp[1]).split(","):
 			var n := str(nm).strip_edges()
-			if n != "":
+			if n == "":
+				continue
+			var eq := n.find("=")
+			if eq > 0:
+				var tok := n.substr(0, eq).strip_edges()
+				var disp := n.substr(eq + 1).strip_edges()
+				if tok != "" and disp != "":
+					cast[tok.to_lower()] = disp   # shorthand -> display name
+			else:
 				cast[n.to_lower()] = n
 
 	for raw in text.split("\n"):
@@ -242,8 +253,11 @@ func _parse(text: String) -> void:
 			var i := line.find(":")
 			if i > 0:
 				var prefix := line.substr(0, i).strip_edges()
-				var known: bool = cast.has(prefix.to_lower())
-				if prefix != "" and (known or (not prefix.contains(" ") and prefix.length() <= 24)):
+				var key := prefix.to_lower()
+				if prefix != "" and cast.has(key):
+					spk = str(cast[key])
+					body = line.substr(i + 1).strip_edges()
+				elif prefix != "" and not prefix.contains(" ") and prefix.length() <= 24:
 					spk = prefix
 					body = line.substr(i + 1).strip_edges()
 			var is_narr: bool = spk == "" or spk == "Narrator" or spk == "~"
@@ -559,7 +573,28 @@ func _compose_text(node: Dictionary) -> String:
 			t = "[font_size=22]%s[/font_size]" % t
 		"large":
 			t = "[font_size=40]%s[/font_size]" % t
+	return _inline(t)
+
+
+## Inline shorthand: *bold* -> [b]bold[/b], _italic_ -> [i]italic[/i].
+## Needs a matching pair; a lone mark is left alone.
+func _inline(s: String) -> String:
+	var t := _wrap(s, "*", "b")
+	t = _wrap(t, "_", "i")
 	return t
+
+
+func _wrap(s: String, mark: String, tag: String) -> String:
+	var parts := s.split(mark)
+	if parts.size() < 3:
+		return s
+	var out := ""
+	for idx in parts.size():
+		if idx % 2 == 1:
+			out += "[%s]%s[/%s]" % [tag, parts[idx], tag]
+		else:
+			out += parts[idx]
+	return out
 
 
 func _has_staging(node: Dictionary, verb: String) -> bool:

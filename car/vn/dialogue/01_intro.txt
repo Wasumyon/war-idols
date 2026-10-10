@@ -1,56 +1,99 @@
 # War Idol - 01 - Intro
-# Source: Stories/test.txt (Intro).
 #
-# --- FORMAT REFERENCE -------------------------------------------------------
-# LINE TYPES
-#   Name: text      dialogue  -> bottom box, name label, typewriter
-#   text            narration -> full screen, no name, one line added per click
-#   ? choice text   a branch under the line above
-#   + stat n        effect for the branch/line above  (e.g. + hype 5)
-#   -> label        jump to a beat; blank ends the scene
-#   == label        a named beat to jump to
-#   # comment       ignored
-#
-# DIRECTIVES - two kinds
-#   MODE (sticky; lasts until changed - add "off" to undo):
-#     @ fullscreen / @ fullscreen off        @ box  (= fullscreen off)
-#     @ center / @ center off                @ right / @ right off
-#     @ small / @ small off                  @ large / @ large off
-#     @ music <name>  (loops; @ music stop)
-#   EVENT (one-shot; happens on this line only):
-#     @ stage <text>   @ sfx <name>   @ shake   @ input_name
-#
-# A line is dialogue ONLY if the text before the first ":" is one word.
-# So "Chip: hi" is dialogue, but "Our contract: split 50/50" is narration.
-# ---------------------------------------------------------------------------
+# QUICK REFERENCE (full list in vn.gd's header)
+#   text              narration -> full screen, one line per click
+#   Name: / X: text   dialogue  -> bottom box, name label, typewriter
+#   *bold*  _italic_  inline shorthand for [b] / [i]
+#   ? choice   + stat n   -> label   == label   # comment
+#   @ narration / @ box            prose mode vs dialogue mode
+#   @ cast C=Chip, P=Player        one-letter speaker shorthand
+#   @ stage <text>  @ sfx <name>  @ music <name>  @ shake  @ glitch
+#   @ img <name>  @ zoom <f>  @ fade [s]  @ page  @ input_name
 
 == intro
-@ fullscreen
 @ center
 @ large
 WAR IDOL
 
 @ center off
 @ large off
-It doesn't matter how good or bad things get - even beneath the all-seeing red eye of Jupiter, everyone's gotta make a buck.
-The boom times, when my pops moved out to the Jovian moons as a volunteer for the Giant Leap Pioneer Project, are long over.
-The bubble dreams of our fathers popped. The lost children of that era lived as gig-economy freeters, junkies, and burnouts.
-Many were gazing bleary-eyed at the end of a gunbarrel - until the invasion of Io.
-But war is every fool's market, and whenever the bull comes to ride, sex and violence are top sellers.
-There was plenty of the latter when the bugs came to Io. We even got some of the former when the lookieloos and digital nomads came.
-The XO cut radio silence and started selling licenses for "civilian war journalism" to fund the war effort and keep morale up.
-More for the Treasury Committee than for the actual soldiers and their families.
-Streamers with scanty digital avatars did the best, no matter what any scholar or activist wanted to change about society.
-Fresh meat looking to pay off mortgages and bad loans flooded the frontlines.
-Everyone back home, too scared to dip in the blood, was nevertheless peckish for realistic, raw sadist or revenge footage.
-My meal ticket came when one of these "Virtual Youtubers" wandered into the grinder armed with just her selfie stick.
-Her JustFans wasn't paying the bills, and the war was perfect for her adrenaline-junkie nerves.
-On a spit and a handshake, we became partners.
-Our contract: I keep her breathing, and she shakes her big charisma for the audience. We cut it all fifty-fifty, profit and expense.
-Death clause: all the belongings of the deceased transfer to the living member - after a Space Vultures Guild investigation confirms no foul play.
-The moonchild of this beautiful relationship was our first thousand subs.
-Donations with a message of support or snark - "hyperchats" - were now enabled. After a savage eighty percent cut for "taxes and services."
-The low-hanging fruit was running out. Soon the crackpots and the spooks were hand in hand with the grunts in one symbiotic pool of entrepreneurship.
-More and more rumblings of foul play and conspiracy started hitting the net - and making quick cash.
-That said, the simplicity of war joined with the guarantee of return finally made the present clear, if not bright:
-[i]Stay alive, and elbow out the competition with the wildest content you can get away with monetizing. Those are the rules of the War Idols.[/i]
+
+# cast shorthand: one letter stands in for a speaker
+@ cast C=Chip, P=Player, Captain Keno
+
+Seven months since then. Four of those spent suspended on a torture rack, resetting my spine. Another two for rehab.
+
+Only one other made it out of the verdigris hellpits of Chaac Patera. And then he was gone too. Three weeks. I'm sorry I couldn't make it in time, buddy.
+
+The bald recruiter with the bespectacled, beady eyes had them pegged on the leg, then my file, then my face, then quickly back to the file. Must have looked like hell.
+Something catches his eye. He stiffens; his arm begins to snap to attention before he catches himself and coughs.
+
+"First Loki Patera, Tarsus Regio, Prometheus, Uruk Sulcus, Second Loki Patera, Conamara Chaos, Argus Panoptes!" he whistles.
+His tone goes somber again.
+"Chaac Patera..."
+
+He drops the papers.
+
+"Sarge. What are you doing here?" He leans closer. "Someone put you to this?"
+"Enlisting."
+"You know what I- Look behind you. We're not short on our backlog. A record like this, you should be living high on the hog on your VA benefits!"
+
+Pain pulses through my phantom knee as I wait in silence.
+
+"Uh... right. I'm sorry, but with *that*, you know I can't do anything for you. But... you know Vulkan Security is always hiring. With this record, I'm sure you can skip the physical."
+
+As I about-faced, the Triskelion Lion of Nemean Company - three heads swallowing Io, Europa, and Ganymede - sat emblazoned on my cloak. It commanded silence.
+Nothing could be heard except the clack of my cane and boots.
+
+The show only landed harder because of the stairs. For a moment I shifted my weight onto a leg that belonged to me, and then my cheek dug hard into the red pavement.
+Turning over, it's watching me again. That mocking red eye of Jupiter. Well, laugh, damn you.
+
+No one turns their head. People pass around me like a stream around stone. Good. A man who can't get up by himself is as good as gone on Io.
+
+The boom times, when dad moved out to the Jovian moons volunteering for the Giant Leap Pioneer Project, are long over.
+Our fathers' bubble dreams popped. The lost children of that era lived as sycophants, freeters, and burnouts.
+Many dreamed, gazing bleary-eyed into bottles and gunbarrels - until the infestation of Io.
+Don't matter how good or bad things get, under that all-seeing eye, everyone's gotta make a buck. Or get drunk and punch someone.
+
+Can't remember the first two bars, or was it three? I had to get it out of my system. I had to win, even if it was Pyrrhic.
+It felt good, getting cracked by that ducking left hook. He and I learned that the cane is not just for the aura.
+
+War is a fool's market, and whenever the bull comes to ride: sex, drink, and violence are the top sellers.
+And wrecks like me inevitably flow to Keno's gutter.
+
+C: So was it loud? Like actually loud, or does it all just become white noise?
+
+I try to endure the cacophony through an old-fashioned, to no avail.
+
+C: Is it true what they say about the smell? How many people have you killed!?~
+
+P: Lady, you've got no gun, no muscle, and no dictionary. What's a tart like you doing out here?
+
+C: Content!
+
+P: This the content you were looking for?
+
+I can see the sweat bead on her brow as she raises her hands. Her smile curdles, but she holds it together. She presses her ribcage into my laspistol.
+
+C: Oh, deary me! Chat, you see what rapscallions will do to a damsel out in these boondocks!? Constable! I need the thesaurus police!~
+
+Eyes turn. Sweat beads on my brow. I move to put the gun away.
+Like a viper, she catches my hand, thrusts her slim arm over my elbow, and turns her tiny back into my chest.
+She holds my hand with the gun barrel up to her lips and snaps a selfie of her miming blowing smoke off it.
+
+C: See! I know how to shoot too, hotshot.
+
+I push the goblin off me, and she transfers the momentum into a spin and curtsies.
+
+P: Get lost!
+
+She didn't. She slid back into the stool beside me like we've known each other for years, thumb already scrolling.
+On the Feed was the clip of us - our... dance. Notifications ring off her phone, reading off donations and comments.
+
+C: Fifty. Seventy. Two-hundred! Oh~ Thank you, chat! Drinks are on me today, old man.
+
+She taps in a bunch of drinks on the bar screen. And begins to swipe.
+
+P: You saying I can't pay for my own?
+C: I'm saying a *lady* sometimes feels generous.
+P: Generous ladies are dangerous ones. 'Sides, a guy always pays for the first date.
