@@ -22,6 +22,8 @@ WAR IDOL
 @ center off
 @ large off
 
+@ cast Captain Keno
+
 # ---- 1. the enlistment office ----
 # ART: a fluorescent intake hall; a desk, a recruiter, and a queue of the young and cheap
 The first thing I did when they let me walk was try to enlist again.
@@ -114,21 +116,20 @@ Then she was up and gone - phone raised, already filming the door.
 
 I turned to settle with the man behind the bar - Captain Keno, though nobody had called him anything but Keno in years. They'd named the place after him so long ago the old name was gone; the gutter just said *Keno's* and everyone knew where to go.
 Keno's never overcharged. That was the whole trick of it, the reason the whole gutter drank here. And he still shook his head.
-Keno: She covered it.
+Captain Keno: She covered it.
 
 # [[ the pride jolt. small, human, funny. ]]
 I caught her at the door, phone turned toward me - the payment screen still lit, *paid, paid, paid* - and a little wave, like she'd won something.
 
 I put my chips down anyway. The old kind. The ones that weigh. I put down more than the round was worth, because that's the only way a man like me knows how to say a thing without saying it.
-Keno: That's too much.
+Captain Keno: That's too much.
 Player: Then the next one's on me.
 
 # [[ RUNNING GAG: the barkeep (Captain Keno) ALWAYS gets overpaid. Over the story he quietly grows
 #    rich - and spends it: free food, no gouging, the one soft place in the war. Keno's recurs as
 #    the interview hub. ]]
-# [[ SPEAKER LABEL: the parser makes a line dialogue only if the name before ":" is ONE word,
-#    so the label is "Keno:" (displays "Keno"), while the prose calls him "Captain Keno."
-#    If you want "Captain Keno:" as a label, I need to add a cast-name list - say the word. ]]
+# [[ SPEAKER LABEL: "Captain Keno" is whitelisted by "@ cast Captain Keno" near the top,
+#    so "Captain Keno: ..." reads as dialogue. (One-word names need no whitelist.) ]]
 
 Player: Hey-
 The door was already closing.

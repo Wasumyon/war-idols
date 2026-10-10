@@ -44,6 +44,11 @@ extends Control
 ##     @ tremble                 (same as writing all three effects)
 ##   Presets are per-file. Define them near the top; order does not matter.
 ##
+##   CAST - whitelist speaker names so multi-word names read as dialogue
+##   ("Captain Keno: ..."), while "Our contract: 50/50" stays narration.
+##     @ cast Captain Keno, Ottenok
+##   (A single word before ":" is always treated as a speaker anyway.)
+##
 ## A line is dialogue ONLY if the text before the first ":" is one word.
 ## So "Chip: hi" is dialogue, but "Our contract: split 50/50" is narration.
 ##
@@ -158,6 +163,22 @@ func _parse(text: String) -> void:
 		if pname != "":
 			presets[pname] = fx
 
+	# Cast: "@ cast Name" (comma-separated OK) whitelists speaker names that may
+	# contain spaces, so "Captain Keno: ..." is dialogue while
+	# "Our contract: 50/50" stays narration. Collected up front; per file.
+	var cast := {}
+	for raw in text.split("\n"):
+		var cl: String = str(raw).strip_edges()
+		if not cl.begins_with("@"):
+			continue
+		var cdp := cl.substr(1).strip_edges().split(" ", true, 1)
+		if str(cdp[0]) != "cast" or cdp.size() < 2:
+			continue
+		for nm in str(cdp[1]).split(","):
+			var n := str(nm).strip_edges()
+			if n != "":
+				cast[n.to_lower()] = n
+
 	for raw in text.split("\n"):
 		var line: String = raw.strip_edges()
 		if line == "":
@@ -178,8 +199,8 @@ func _parse(text: String) -> void:
 			var arg := str(dp[1]).strip_edges() if dp.size() > 1 else ""
 			if verb == "page":
 				pending_page = true
-			elif verb == "preset":
-				pass   # definitions were collected above
+			elif verb == "preset" or verb == "cast":
+				pass   # declarations were collected above
 			elif MODE_VERBS.has(verb):
 				_apply_mode(modes, verb, arg)
 				pending_mode = true
@@ -221,7 +242,8 @@ func _parse(text: String) -> void:
 			var i := line.find(":")
 			if i > 0:
 				var prefix := line.substr(0, i).strip_edges()
-				if prefix != "" and not prefix.contains(" ") and prefix.length() <= 24:
+				var known: bool = cast.has(prefix.to_lower())
+				if prefix != "" and (known or (not prefix.contains(" ") and prefix.length() <= 24)):
 					spk = prefix
 					body = line.substr(i + 1).strip_edges()
 			var is_narr: bool = spk == "" or spk == "Narrator" or spk == "~"
