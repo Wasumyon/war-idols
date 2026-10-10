@@ -1,12 +1,16 @@
 # War Idol - DRAFT: 01 intro (character run)   (assistant draft - NOT a playable scene)
 # ---------------------------------------------------------------------------
 # SHAPE:  enlistment office (rejected) -> the trip (phantom limb) -> the drift
-#         -> meets Chip -> the thugs (the basis) -> the contract
+#         -> meets Chip (bar) -> the thugs (the basis) -> the contract
 # Register: colder than the prologue. The prologue is present and visceral;
 #           this is memory. Same man, lower temperature.
 # NOTES: every "# [[ ... ]]" line is a comment (ignored). Delete them.
 #        Enemy name is a PLACEHOLDER (bugs / bots / mutation still being decided).
 #        "SubHub" is a placeholder for the site name.
+#        FORMAT: a bare line = the POV's interior, renders FULLSCREEN (narration).
+#        "Name: text" = dialogue, renders in the BOX. So a scene with both
+#        alternates between them. If that flickers badly, move his interior
+#        beats to "@ stage <text>" (an italic line inside the box).
 # ---------------------------------------------------------------------------
 
 == intro
@@ -65,14 +69,12 @@ I don't remember which bar the first one was in. I remember the second, and that
 
 A broken soldier in a dead market is a commodity with no buyers. I found the gutter the way you find anything down there: by falling into it.
 
-# ---- 4. meets Chip ----
+# ---- 4. meets Chip (the bar) ----
 # [[ @ box opens the chapter into a SCENE. her weapon is her mouth; on him it WORKS. ]]
-# [[ NOTE: "Player:" shows "Blockhead" until the name is entered (later, in 03_car).
-#    If that reads wrong here, keep HIS lines as narration ("I told her to get lost.")
-#    and give only CHIP dialogue. Your call. ]]
+# [[ NOTE: "Player:" shows "Blockhead" until the name is entered (later, in 03_car). ]]
 @ box
 
-# ART: Chip - bright, broke, over-accessorised; a selfie stick and a dead SubHub
+# ART: a low bar; Chip - bright, broke, over-accessorised; a selfie stick and a dead SubHub
 Chip: So was it loud? Like, actually loud, or do you just stop noticing? Is it true the front smells like that? Have you killed anyone *interesting*?
 # [[ she PRIES - the audience's proxy. she wants content, and he's a source. ]]
 Player: You've got no gun, no sense, and no muscle. What are you doing out here?
@@ -91,9 +93,36 @@ She caught my gun hand, then, and posed like she was blowing the smoke off the b
 
 Player: Get lost.
 
-She gave me something first. The photo - her, my hand, the gun, both our faces - already sent somewhere upstream.
+# [[ the bar beat: the bit PAID. she's suddenly flush. she buys. his pride can't stand it. ]]
+She didn't leave. She slid onto the stool beside me like we'd known each other for years, thumb already scrolling - the clip of the two of us, up on the Feed, the counter already turning.
 
-Chip: That's you, big man. Don't lose it.
+Chip: Forty. Fifty. Sixty - oh, chat, that's *rent*, old man. Drinks are on me.
+She swiped before I could open my mouth. A whole round, bought with one flick of her thumb.
+
+I caught her wrist. Not hard. Just enough to stop the hand.
+Player: You trying to say I can't buy my own?
+Chip: I'm *saying* a girl likes to feel generous.
+Player: A guy pays for the first date. That's not negotiable.
+
+# [[ the sexual tension ramps - teasing, light, mutual. ]]
+She looked at me like she was deciding something, and didn't take her hand back.
+Chip: Old-fashioned.
+# [[ NOTE: same 'old-fashioned' / 'hard-boiled' note as the selfie beat - merge if you like. ]]
+She said it like a word she meant to keep.
+
+Then she was up and gone - phone raised, already filming the door.
+
+I turned to settle with the bartender. He shook his head.
+Bartender: She covered it.
+
+# [[ the pride jolt. small, human, funny. ]]
+I caught her at the door, phone turned toward me - the payment screen still lit, *paid, paid, paid* - and a little wave, like she'd won something.
+
+I put my chips on the bar anyway. The old kind. The ones that weigh.
+Player: Hey-
+The door was already closing.
+
+I went after her. Lost her two streets on, in the crowd that comes out for the fights.
 
 # ---- 5. the thugs (the basis) ----
 # [[ SAME bit, different room. On him it worked. On predators it fails.
@@ -128,12 +157,30 @@ I spat on the rest of them.
 # ART: he drops his coat over her; the phone is on the ground, still live, still counting
 I put my coat over her and picked the phone up off the grate. It was still streaming. It was still making money.
 
-Chip: [i]...They were watching. Every one of them was watching, and the count just kept - [/i]
-Chip: I need someone.
+# ---- the turn ----
+# [[ his lecture FAILS - but the failure is the point. ]]
+I told her what I'd wanted to tell her at the bar. That the bit doesn't work. That it only ever works when there are people near enough to care enough to stop - and out here there never are. That she'd been lucky exactly once, and me being that luck wasn't a plan.
 
-# [[ her armor FAILS and she admits need. his purpose RETURNS. both cracks open. ]]
+She kept her eyes down while I said it. Nodded, small. Demure, even.
 
-And I was looking at the number at the top of her screen - the biggest number I'd seen in a year.
+And then she looked up, and she wasn't demure at all.
+
+Chip: It did work, though. Didn't it.
+
+# [[ her meaning: the audience didn't save her - HE did. the bit worked, on him.
+#    his meaning: he'll be her gun; she'll be his salvation. ]]
+
+I didn't have an answer for that.
+
+# [[ THE MUSE - his real reason, under the stated one. Keep the dismissal in it:
+#    "airhead" is HIS misread, the same one the reader will later eat. ]]
+She was an airhead. Pink-haired, too loud, a thousand light-years from anywhere she belonged, and she was going to get herself killed and I was going to watch it happen because I was tired.
+
+That's what I told myself.
+
+But she did something to a room that I couldn't name, and I don't think she knew she was doing it. Around her, people forgot. They forgot the front. They forgot the units, the shelling, what was in the rubble. They remembered that they were people, and that there were other people, and that those were two separate things a person could get back.
+
+She made the war stop being the only thing in the room.
 
 # ---- 6. the contract / the world ----
 @ narration
