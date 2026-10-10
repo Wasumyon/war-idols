@@ -74,7 +74,7 @@ A broken soldier in a dead market is a commodity with no buyers. I found the gut
 # [[ NOTE: "Player:" shows "Blockhead" until the name is entered (later, in 03_car). ]]
 @ box
 
-# ART: a low bar; Chip - bright, broke, over-accessorised; a selfie stick and a dead SubHub
+# ART: The Spill - a low dive, one light, benches; Chip - bright, broke, over-accessorised; a selfie stick and a dead SubHub
 Chip: So was it loud? Like, actually loud, or do you just stop noticing? Is it true the front smells like that? Have you killed anyone *interesting*?
 # [[ she PRIES - the audience's proxy. she wants content, and he's a source. ]]
 Player: You've got no gun, no sense, and no muscle. What are you doing out here?
@@ -112,13 +112,23 @@ She said it like a word she meant to keep.
 
 Then she was up and gone - phone raised, already filming the door.
 
-I turned to settle with the bartender. He shook his head.
+I turned to settle with the bartender. The Spill never overcharged - that was the whole trick of the place, the reason the whole gutter drank here - and the man behind it still shook his head.
 Bartender: She covered it.
 
 # [[ the pride jolt. small, human, funny. ]]
 I caught her at the door, phone turned toward me - the payment screen still lit, *paid, paid, paid* - and a little wave, like she'd won something.
 
-I put my chips on the bar anyway. The old kind. The ones that weigh.
+I put my chips down anyway. The old kind. The ones that weigh. I put down more than the round was worth, because that's the only way a man like me knows how to say a thing without saying it.
+Bartender: That's too much.
+Player: Then the next one's on me.
+
+# [[ RUNNING GAG: the barkeep ALWAYS gets overpaid. Over the story he quietly grows rich - and
+#    spends it: free food, no gouging, the one soft place in the war. The bar recurs as the
+#    interview hub. ]]
+# [[ BAR NAME - suggestions: "The Spill" (the overflow that gets given back) /
+#    "The Vent" (Io's volcanism + where people let off steam) / "The Mess" (communal,
+#    free food, a dive) / "Ma's". Swap freely. ]]
+
 Player: Hey-
 The door was already closing.
 
