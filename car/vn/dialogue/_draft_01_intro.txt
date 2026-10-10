@@ -1,11 +1,12 @@
-# War Idol - DRAFT: 01 intro restructure   (assistant draft - NOT a playable scene)
+# War Idol - DRAFT: 01 intro (character run)   (assistant draft - NOT a playable scene)
 # ---------------------------------------------------------------------------
-# SHAPE:  prologue blackout -> hospital -> tries to soldier again (barred)
-#         -> the drift -> meets Chip -> the world / the contract
+# SHAPE:  enlistment office (rejected) -> the trip (phantom limb) -> the drift
+#         -> meets Chip -> the thugs (the basis) -> the contract
 # Register: colder than the prologue. The prologue is present and visceral;
 #           this is memory. Same man, lower temperature.
-# [[ ]] = my notes to you. Delete them. Everything else is draft prose to cut up.
-# "SubHub" is a placeholder for whichever name you land on.
+# NOTES: every "# [[ ... ]]" line is a comment (ignored). Delete them.
+#        Enemy name is a PLACEHOLDER (bugs / bots / mutation still being decided).
+#        "SubHub" is a placeholder for the site name.
 # ---------------------------------------------------------------------------
 
 == intro
@@ -17,66 +18,136 @@ WAR IDOL
 @ center off
 @ large off
 
-# ---- 1. hospital ----
-# ART: dim recovery ward; a cot; antiseptic fighting the smell of scorched metal
-They don't tell you what happened. Not the truth of it. Only the version that lets them leave the room.
+# ---- 1. the enlistment office ----
+# ART: a fluorescent intake hall; a desk, a recruiter, and a queue of the young and cheap
+The first thing I did when they let me walk was try to enlist again.
 
-The leg was gone when I woke. That one they didn't dress up.
+# [[ the office IS the war: the young queue, the forms, the poor. He's the oldest man in the room. ]]
 
-The rest I got in pieces, none of them mine. A charge. A blast. A blackout. The medics had a word for the gap, and I let them keep it.
+The recruiter looked at the leg. Then at the file. Then at me.
+Two of those three were on the form. The third one he kept looking at anyway, the way you look at something the printer spat out wrong.
 
-[[ two jobs here: (1) the elision pays off - he doesn't remember, so the twist stays in the gap.
-   (2) the tic lands once, so it reads as a through-line and not a prologue quirk. ]]
+"We've got a backlog of whole men," he said, like it was a kindness. "You understand."
+
+I understood. I stood there and understood it for a long time.
+
+# ---- 2. the trip ----
+# [[ THE KEY BEAT. He'd have caught himself with the left leg. There is no left leg.
+#    Do NOT explain the phantom limb. Let the body do the telling. ]]
+# ART: the wide steps down from the intake hall; a man folding in mid-air
+On the way out, the step wasn't where the rest of me expected it.
+My weight shifted onto a leg that wasn't there - the old reflex, the one the body keeps long after the leg is gone - and it found nothing to stand on.
+
+# [[ phantom limb = the body still believing. Show the fall, never the reason. ]]
+
+I went down the whole flight.
+
+The prosthetic hit first. It always does. That's the part nobody tells you: the machine outlives the piece of you that would have caught it. I lay there a while, cheek on the cold, listening to a joint I paid for grind against a step.
+
+And I thought:
+
+# [[ the tic lands here - the same word from the prologue, now in the gutter. ]]
 
 Good.
 
-# ---- 2. he tries to soldier again ----
-[[ SHOW the attempt. Don't state "he knew nothing else." ]]
-The first thing I did, when I could stand, was try to go back.
-
-[[ scene beat: recruiter / assessment / refusal. Even one line of it sells the whole thing. ]]
-They looked at the leg, then at the file, then at me. Two of those three made it a no.
-
-I argued. It didn't come out as arguing. It came out as a man who couldn't find the words, because there weren't any. There was just the wanting.
-
-[[ "the wanting" is the character. Leave it unexplained. ]]
+Nobody helped me up. That was correct. A man who can't stand in this market is a man the market has already priced.
 
 # ---- 3. the drift ----
-It doesn't matter how good or bad things get - even beneath the all-seeing red eye of Jupiter, everyone's gotta make a buck.
+# [[ compress. keep the voice. he drinks, fights, does dumb shit. lowest point. ]]
 The boom times, when my pops moved out to the Jovian moons as a volunteer for the Giant Leap Pioneer Project, are long over.
 The bubble dreams of our fathers popped. The lost children of that era lived as gig-economy freeters, junkies, and burnouts.
 Many were gazing bleary-eyed at the end of a gunbarrel - until the invasion of Io.
+It doesn't matter how good or bad things get - even beneath the all-seeing red eye of Jupiter, everyone's gotta make a buck. Or find a fight.
 
-[[ ^ your lines, relocated so the history arrives as HIS situation, not a lecture. ]]
+I don't remember which bar the first one was in. I remember the second, and that I won it, and that winning felt like the only thing that had felt like anything in a year.
+
+# [[ "the only thing that had felt like anything" = he's alive only in violence. that's the crack the war left. ]]
 
 A broken soldier in a dead market is a commodity with no buyers. I found the gutter the way you find anything down there: by falling into it.
 
 # ---- 4. meets Chip ----
-[[ she needs a bodyguard, he needs a reason. Two people using each other = the theme on page one. ]]
-Then one of the buyers walked in.
+# [[ @ box opens the chapter into a SCENE. her weapon is her mouth; on him it WORKS. ]]
+# [[ NOTE: "Player:" shows "Blockhead" until the name is entered (later, in 03_car).
+#    If that reads wrong here, keep HIS lines as narration ("I told her to get lost.")
+#    and give only CHIP dialogue. Your call. ]]
+@ box
 
 # ART: Chip - bright, broke, over-accessorised; a selfie stick and a dead SubHub
-She was a "Virtual Youtuber" with a selfie stick and a dead SubHub, and she needed a man who could keep her breathing.
-I needed a reason to be alive by Thursday.
+Chip: So was it loud? Like, actually loud, or do you just stop noticing? Is it true the front smells like that? Have you killed anyone *interesting*?
+# [[ she PRIES - the audience's proxy. she wants content, and he's a source. ]]
+Player: You've got no gun, no sense, and no muscle. What are you doing out here?
 
-On a spit and a handshake, we became partners.
+Chip: Content!
 
-# ---- 5. the world / the contract ----
+# [[ the gun bit: he threatens her. she does NOT cower - her weapon answers. ]]
+I put the muzzle up near her and raised an eyebrow - *you thought this through?*
+She went pale. Then she started *acting*, loud, for a camera that wasn't there.
+
+Chip: Oh, HELP! Do you see how they treat a girl out here!? Where are the *police*! Somebody, HELP-
+
+The whole bar turned to look at *me*. I put the gun away.
+
+She caught my gun hand, then, and posed like she was blowing the smoke off the barrel, and took a selfie - still shaking, but *in* on the joke. She didn't mind the hard-boiled bit. She *played it back*.
+
+Player: Get lost.
+
+She gave me something first. The photo - her, my hand, the gun, both our faces - already sent somewhere upstream.
+
+Chip: That's you, big man. Don't lose it.
+
+# ---- 5. the thugs (the basis) ----
+# [[ SAME bit, different room. On him it worked. On predators it fails.
+#    THAT is the double-edged weapon - proved, not stated. ]]
+@ narration
+
+# ART: a cut-through behind the fuel exchange, sodium light, four men and a girl
+I crossed her again a week later, in the cut behind the fuel exchange. She was running the bit again - louder now, confident. She'd learned that it *worked*.
+
+It didn't.
+
+The one in front slapped the phone out of her hand. I heard the plastic skitter across the grate. Somebody behind her took her arm.
+The one who'd slapped it picked the phone up, turned the camera around, and started reading the numbers out loud. Playing host.
+
+# [[ THE THEME: the audience PAYS for the assault. the count climbs while she screams. nobody stops watching. ]]
+Chip: [i]S-stop - don't - that's - [/i]
+
+Thug: Let's show you boys what you *really* came to see.
+
+The donation pings started before the shirt did. The counter climbed the whole time she screamed. Nobody watching stopped watching.
+One of them got a hand in her collar.
+
+I don't remember deciding. I remember three shots, and the three of them, and the cane for the one who turned toward me with his hands up - as if hands ever helped anyone.
+
+# [[ the runners: he STOPS. not mercy - discipline. they're not a threat. the code the war took from everyone else. ]]
+Two ran. I let them.
+
+# [[ the spit / the line. keep it SHORT. "even the bots don't do this" is ironic - the twist eats it. ]]
+I spat on the rest of them.
+"Even the bots don't do this."
+
+# ART: he drops his coat over her; the phone is on the ground, still live, still counting
+I put my coat over her and picked the phone up off the grate. It was still streaming. It was still making money.
+
+Chip: [i]...They were watching. Every one of them was watching, and the count just kept - [/i]
+Chip: I need someone.
+
+# [[ her armor FAILS and she admits need. his purpose RETURNS. both cracks open. ]]
+
+And I was looking at the number at the top of her screen - the biggest number I'd seen in a year.
+
+# ---- 6. the contract / the world ----
+@ narration
 But war is every fool's market, and whenever the bull comes to ride, sex and violence are top sellers.
-There was plenty of the latter when the bugs came to Io.
+There was plenty of the latter when the mutation came to Io.
+# [[ PLACEHOLDER name for the enemy - bugs / bots / mutation, per your decision ]]
 The XO cut radio silence and started selling licenses for "civilian war journalism" to fund the war effort and keep morale up.
 More for the Treasury Committee than for the actual soldiers and their families.
 Streamers with scanty digital avatars did the best, no matter what any scholar or activist wanted to change about society.
 Fresh meat looking to pay off mortgages and bad loans flooded the frontlines.
-Everyone back home, too scared to dip in the blood, was nevertheless peckish for realistic, raw sadist or revenge footage.
 
 Our contract: I keep her breathing, and she shakes her big charisma for the audience. We cut it all fifty-fifty, profit and expense.
 Death clause: all the belongings of the deceased transfer to the living member - after a Space Vultures Guild investigation confirms no foul play.
 The moonchild of this beautiful relationship was our first thousand subs.
-Donations with a message of support or snark - "hyperchats" - were now enabled. After a savage eighty percent cut for "taxes and services."
-
-The low-hanging fruit was running out. Soon the crackpots and the spooks were hand in hand with the grunts in one symbiotic pool of entrepreneurship.
-More and more rumblings of foul play and conspiracy started hitting the net - and making quick cash.
 
 That said, the simplicity of war joined with the guarantee of return finally made the present clear, if not bright:
 [i]Stay alive, and elbow out the competition with the wildest content you can get away with monetizing. Those are the rules of the War Idols.[/i]
