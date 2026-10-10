@@ -1,0 +1,82 @@
+# War Idol - DRAFT: 01 intro restructure   (assistant draft - NOT a playable scene)
+# ---------------------------------------------------------------------------
+# SHAPE:  prologue blackout -> hospital -> tries to soldier again (barred)
+#         -> the drift -> meets Chip -> the world / the contract
+# Register: colder than the prologue. The prologue is present and visceral;
+#           this is memory. Same man, lower temperature.
+# [[ ]] = my notes to you. Delete them. Everything else is draft prose to cut up.
+# "SubHub" is a placeholder for whichever name you land on.
+# ---------------------------------------------------------------------------
+
+== intro
+@ narration
+@ center
+@ large
+WAR IDOL
+
+@ center off
+@ large off
+
+# ---- 1. hospital ----
+# ART: dim recovery ward; a cot; antiseptic fighting the smell of scorched metal
+They don't tell you what happened. Not the truth of it. Only the version that lets them leave the room.
+
+The leg was gone when I woke. That one they didn't dress up.
+
+The rest I got in pieces, none of them mine. A charge. A blast. A blackout. The medics had a word for the gap, and I let them keep it.
+
+[[ two jobs here: (1) the elision pays off - he doesn't remember, so the twist stays in the gap.
+   (2) the tic lands once, so it reads as a through-line and not a prologue quirk. ]]
+
+Good.
+
+# ---- 2. he tries to soldier again ----
+[[ SHOW the attempt. Don't state "he knew nothing else." ]]
+The first thing I did, when I could stand, was try to go back.
+
+[[ scene beat: recruiter / assessment / refusal. Even one line of it sells the whole thing. ]]
+They looked at the leg, then at the file, then at me. Two of those three made it a no.
+
+I argued. It didn't come out as arguing. It came out as a man who couldn't find the words, because there weren't any. There was just the wanting.
+
+[[ "the wanting" is the character. Leave it unexplained. ]]
+
+# ---- 3. the drift ----
+It doesn't matter how good or bad things get - even beneath the all-seeing red eye of Jupiter, everyone's gotta make a buck.
+The boom times, when my pops moved out to the Jovian moons as a volunteer for the Giant Leap Pioneer Project, are long over.
+The bubble dreams of our fathers popped. The lost children of that era lived as gig-economy freeters, junkies, and burnouts.
+Many were gazing bleary-eyed at the end of a gunbarrel - until the invasion of Io.
+
+[[ ^ your lines, relocated so the history arrives as HIS situation, not a lecture. ]]
+
+A broken soldier in a dead market is a commodity with no buyers. I found the gutter the way you find anything down there: by falling into it.
+
+# ---- 4. meets Chip ----
+[[ she needs a bodyguard, he needs a reason. Two people using each other = the theme on page one. ]]
+Then one of the buyers walked in.
+
+# ART: Chip - bright, broke, over-accessorised; a selfie stick and a dead SubHub
+She was a "Virtual Youtuber" with a selfie stick and a dead SubHub, and she needed a man who could keep her breathing.
+I needed a reason to be alive by Thursday.
+
+On a spit and a handshake, we became partners.
+
+# ---- 5. the world / the contract ----
+But war is every fool's market, and whenever the bull comes to ride, sex and violence are top sellers.
+There was plenty of the latter when the bugs came to Io.
+The XO cut radio silence and started selling licenses for "civilian war journalism" to fund the war effort and keep morale up.
+More for the Treasury Committee than for the actual soldiers and their families.
+Streamers with scanty digital avatars did the best, no matter what any scholar or activist wanted to change about society.
+Fresh meat looking to pay off mortgages and bad loans flooded the frontlines.
+Everyone back home, too scared to dip in the blood, was nevertheless peckish for realistic, raw sadist or revenge footage.
+
+Our contract: I keep her breathing, and she shakes her big charisma for the audience. We cut it all fifty-fifty, profit and expense.
+Death clause: all the belongings of the deceased transfer to the living member - after a Space Vultures Guild investigation confirms no foul play.
+The moonchild of this beautiful relationship was our first thousand subs.
+Donations with a message of support or snark - "hyperchats" - were now enabled. After a savage eighty percent cut for "taxes and services."
+
+The low-hanging fruit was running out. Soon the crackpots and the spooks were hand in hand with the grunts in one symbiotic pool of entrepreneurship.
+More and more rumblings of foul play and conspiracy started hitting the net - and making quick cash.
+
+That said, the simplicity of war joined with the guarantee of return finally made the present clear, if not bright:
+[i]Stay alive, and elbow out the competition with the wildest content you can get away with monetizing. Those are the rules of the War Idols.[/i]

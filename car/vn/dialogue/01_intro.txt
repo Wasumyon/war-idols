@@ -1,4 +1,4 @@
-# War Idols - 01 - Intro
+# War Idol - 01 - Intro
 # Source: Stories/test.txt (Intro).
 #
 # --- FORMAT REFERENCE -------------------------------------------------------
@@ -28,7 +28,7 @@
 @ fullscreen
 @ center
 @ large
-WAR IDOLS
+WAR IDOL
 
 @ center off
 @ large off

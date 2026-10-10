@@ -1,4 +1,4 @@
-# War Idols
+# War Idol
 
 Design and prototype repository. A war-journalism story set on Io, and a
 2.5D vehicle "filming runner" prototype built in Godot.

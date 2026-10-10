@@ -1,4 +1,4 @@
-# War Idols - 02 - Opening stream
+# War Idol - 02 - Opening stream
 # Source: Stories/test.txt (Opening scene).
 #
 # --- FORMAT REFERENCE -------------------------------------------------------

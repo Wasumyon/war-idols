@@ -1,4 +1,4 @@
-# War Idols - 00_prologue
+# War Idol - 00_prologue
 #
 # First-person present. Full-screen narration: one line per click, no speaker,
 # no text box. The player is rescued/medically discharged AFTER this; nothing

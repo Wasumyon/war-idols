@@ -1,4 +1,4 @@
-# War Idols - 03 - The car
+# War Idol - 03 - The car
 # Source: Stories/test.txt (Opening scene 2).
 #
 # --- FORMAT REFERENCE -------------------------------------------------------
